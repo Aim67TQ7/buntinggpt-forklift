@@ -1474,6 +1474,30 @@ export type Database = {
           },
         ]
       }
+      forklift_qualified_drivers: {
+        Row: {
+          badge_number: string
+          created_at: string | null
+          driver_name: string
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          badge_number: string
+          created_at?: string | null
+          driver_name: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          badge_number?: string
+          created_at?: string | null
+          driver_name?: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Relationships: []
+      }
       forklift_units: {
         Row: {
           created_at: string | null
