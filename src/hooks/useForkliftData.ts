@@ -32,6 +32,7 @@ export interface ChecklistResponse {
   question_id: string;
   status: "pass" | "fail" | "na";
   timestamp: string;
+  admin_notes?: string | null;
   forklift_checklist_questions?: ChecklistQuestion;
 }
 
@@ -372,6 +373,23 @@ export function useDeleteDriver() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["qualified-drivers"] });
+    },
+  });
+}
+
+export function useUpdateAdminNotes() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ responseId, adminNotes }: { responseId: string; adminNotes: string }) => {
+      const { error } = await supabase
+        .from("forklift_checklist_responses")
+        .update({ admin_notes: adminNotes })
+        .eq("id", responseId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["submission-responses"] });
     },
   });
 }
