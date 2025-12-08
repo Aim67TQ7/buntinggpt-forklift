@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Settings, Send, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import { ChecklistHelpDialog } from "./ChecklistHelpDialog";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -134,23 +133,20 @@ export function CompactChecklist() {
   return (
     <div className="min-h-screen bg-background pb-28">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border p-4 shadow-lg">
+      <div className="sticky top-0 z-10 bg-primary p-4 shadow-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Logo" className="w-12 h-12 object-contain" />
-            <h1 className="text-xl font-bold text-primary">FORKLIFT CHECKLIST</h1>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
+            <h1 className="text-lg font-bold text-primary-foreground">FORKLIFT CHECK</h1>
           </div>
-          <div className="flex items-center">
-            <ChecklistHelpDialog />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-12 w-12"
-              onClick={() => navigate("/admin")}
-            >
-              <Settings className="w-6 h-6" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-primary-foreground hover:bg-primary-foreground/10 h-10 w-10"
+            onClick={() => navigate("/admin")}
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
         </div>
       </div>
 
