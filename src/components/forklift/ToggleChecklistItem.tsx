@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Check, X } from "lucide-react";
 
 type Status = "yes" | "no" | null;
 
@@ -36,12 +37,22 @@ export function ToggleChecklistItem({
 
   const getButtonStyles = () => {
     if (status === "yes") {
-      return "bg-success text-success-foreground border-success";
+      return "bg-success text-success-foreground border-success shadow-lg shadow-success/40";
     }
     if (status === "no") {
-      return "bg-destructive text-destructive-foreground border-destructive";
+      return "bg-destructive text-destructive-foreground border-destructive shadow-lg shadow-destructive/40";
     }
-    return "bg-secondary text-secondary-foreground border-border hover:bg-secondary/80";
+    return "bg-card text-foreground border-border hover:border-muted-foreground";
+  };
+
+  const getIcon = () => {
+    if (status === "yes") {
+      return <Check className="w-6 h-6 shrink-0" />;
+    }
+    if (status === "no") {
+      return <X className="w-6 h-6 shrink-0" />;
+    }
+    return null;
   };
 
   return (
@@ -49,16 +60,17 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-2 px-4 rounded-lg font-medium text-lg transition-all duration-200 border-2 text-left ${getButtonStyles()}`}
+        className={`w-full py-4 px-4 rounded-xl font-semibold text-base transition-all duration-200 border-2 flex items-center justify-between gap-3 ${getButtonStyles()}`}
       >
-        {label}
+        <span className="text-left">{label}</span>
+        {getIcon()}
       </button>
       {showComment && (
         <textarea
           placeholder="Required: Describe the issue..."
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
-          className="w-full bg-input border border-border rounded-lg p-4 text-lg text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full bg-input border border-border rounded-xl p-4 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           rows={2}
         />
       )}
