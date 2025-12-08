@@ -46,6 +46,14 @@ export interface FailNotification {
   created_at: string;
 }
 
+export interface QualifiedDriver {
+  id: string;
+  badge_number: string;
+  driver_name: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 export function useForklifts() {
   return useQuery({
     queryKey: ["forklifts"],
@@ -135,16 +143,32 @@ export function useFailNotifications() {
   });
 }
 
+export function useQualifiedDrivers() {
+  return useQuery({
+    queryKey: ["qualified-drivers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("forklift_qualified_drivers")
+        .select("*")
+        .eq("is_active", true)
+        .order("driver_name");
+      if (error) throw error;
+      return data as QualifiedDriver[];
+    },
+  });
+}
+
 export function useValidateBadge() {
   return useMutation({
     mutationFn: async (badgeNumber: string) => {
       const { data, error } = await supabase
-        .from("Employee_id")
-        .select("employee_id, displayName")
-        .ilike("employee_id", badgeNumber)
+        .from("forklift_qualified_drivers")
+        .select("id, badge_number, driver_name")
+        .eq("badge_number", badgeNumber)
+        .eq("is_active", true)
         .limit(1);
       if (error) throw error;
-      return data.length > 0 ? data[0] : null;
+      return data.length > 0 ? { badge_number: data[0].badge_number, displayName: data[0].driver_name } : null;
     },
   });
 }
@@ -315,6 +339,39 @@ export function useDeleteForklift() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["forklifts"] });
+    },
+  });
+}
+
+export function useAddDriver() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ badgeNumber, driverName }: { badgeNumber: string; driverName: string }) => {
+      const { error } = await supabase
+        .from("forklift_qualified_drivers")
+        .insert({ badge_number: badgeNumber, driver_name: driverName });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qualified-drivers"] });
+    },
+  });
+}
+
+export function useDeleteDriver() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("forklift_qualified_drivers")
+        .update({ is_active: false })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qualified-drivers"] });
     },
   });
 }

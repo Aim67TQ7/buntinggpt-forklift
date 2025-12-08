@@ -131,64 +131,64 @@ export function CompactChecklist() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-28">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-card border-b border-border p-4 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
-            <h1 className="text-lg font-bold text-primary">FORKLIFT CHECKLIST</h1>
+            <img src={logo} alt="Logo" className="w-12 h-12 object-contain" />
+            <h1 className="text-xl font-bold text-primary">FORKLIFT CHECKLIST</h1>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground h-12 w-12"
             onClick={() => navigate("/admin")}
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-6 h-6" />
           </Button>
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-5">
         {/* Employee ID */}
         <div className="space-y-2">
-          <Label className="text-foreground">
+          <Label className="text-foreground text-lg">
             Employee ID <span className="text-primary">*</span>
           </Label>
           <div className="relative">
             <Input
               type="text"
-              placeholder="2-4 digits"
+              placeholder="Enter badge number"
               value={badgeNumber}
               onChange={(e) => setBadgeNumber(e.target.value)}
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
-              maxLength={4}
+              className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 h-14 text-xl"
+              maxLength={10}
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              {validateBadge.isPending && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
-              {badgeValid === true && <CheckCircle2 className="w-4 h-4 text-success" />}
-              {badgeValid === false && <AlertCircle className="w-4 h-4 text-destructive" />}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              {validateBadge.isPending && <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />}
+              {badgeValid === true && <CheckCircle2 className="w-6 h-6 text-success" />}
+              {badgeValid === false && <AlertCircle className="w-6 h-6 text-destructive" />}
             </div>
           </div>
           {employeeName && (
-            <p className="text-sm text-muted-foreground">{employeeName}</p>
+            <p className="text-lg text-success font-medium">{employeeName}</p>
           )}
           {badgeValid === false && badgeNumber.length >= 2 && (
-            <p className="text-sm text-destructive">Invalid badge number</p>
+            <p className="text-lg text-destructive">Badge not authorized for forklift operation</p>
           )}
         </div>
 
         {/* Forklift Selection */}
         <div className="space-y-2">
-          <Label className="text-foreground">Forklift</Label>
+          <Label className="text-foreground text-lg">Forklift</Label>
           <Select value={selectedForklift} onValueChange={setSelectedForklift}>
-            <SelectTrigger className="bg-input border-border text-foreground">
+            <SelectTrigger className="bg-input border-border text-foreground h-14 text-xl">
               <SelectValue placeholder="Select forklift" />
             </SelectTrigger>
             <SelectContent>
               {forklifts?.map((f) => (
-                <SelectItem key={f.id} value={f.id}>
+                <SelectItem key={f.id} value={f.id} className="text-lg py-3">
                   {f.name} ({f.unit_number})
                 </SelectItem>
               ))}
@@ -211,21 +211,21 @@ export function CompactChecklist() {
         </div>
 
         {!allCommentsProvided && (
-          <p className="text-sm text-destructive">Please provide comments for all failed items</p>
+          <p className="text-lg text-destructive font-medium">Please provide comments for all failed items</p>
         )}
       </div>
 
       {/* Submit Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border safe-bottom">
         <Button
-          className="w-full h-12 text-lg font-semibold"
+          className="w-full h-16 text-xl font-semibold"
           disabled={!canSubmit || submitChecklist.isPending}
           onClick={handleSubmit}
         >
           {submitChecklist.isPending ? (
-            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
           ) : (
-            <Send className="w-5 h-5 mr-2" />
+            <Send className="w-6 h-6 mr-2" />
           )}
           Submit Checklist
         </Button>

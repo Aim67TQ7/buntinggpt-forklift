@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check } from "lucide-react";
+import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
   useSubmissionResponses,
 } from "@/hooks/useForkliftData";
 import { SettingsTab } from "./SettingsTab";
+import { DriversTab } from "./DriversTab";
 
 const ADMIN_PASSCODE = "4155";
 
@@ -59,29 +60,29 @@ export function AdminPage() {
   if (!authenticated) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <Card className="w-full max-w-xs">
+        <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="text-center">Admin Access</CardTitle>
+            <CardTitle className="text-center text-2xl">Admin Access</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-center mb-4">
-              <div className="flex gap-2">
+            <div className="flex justify-center mb-6">
+              <div className="flex gap-3">
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`w-4 h-4 rounded-full ${
+                    className={`w-5 h-5 rounded-full ${
                       i < passcode.length ? "bg-primary" : "bg-muted"
                     }`}
                   />
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "←"].map((digit, i) => (
                 <Button
                   key={i}
                   variant="outline"
-                  className="h-14 text-xl font-medium"
+                  className="h-16 text-2xl font-medium"
                   disabled={digit === ""}
                   onClick={() => {
                     if (digit === "←") {
@@ -97,7 +98,7 @@ export function AdminPage() {
             </div>
             <Button
               variant="ghost"
-              className="w-full mt-4"
+              className="w-full mt-4 text-lg h-12"
               onClick={() => navigate("/")}
             >
               Back to Checklist
@@ -113,46 +114,46 @@ export function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary text-primary-foreground p-3 shadow-lg">
+      <div className="sticky top-0 z-10 bg-primary text-primary-foreground p-4 shadow-lg">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-foreground/10"
+            className="text-primary-foreground hover:bg-primary-foreground/10 h-12 w-12"
             onClick={() => navigate("/")}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-6 h-6" />
           </Button>
-          <h1 className="text-lg font-bold flex-1">Admin Panel</h1>
+          <h1 className="text-xl font-bold flex-1">Admin Panel</h1>
         </div>
       </div>
 
       {/* Notifications Banner */}
       {unreadCount > 0 && (
-        <div className="bg-destructive text-destructive-foreground p-3">
+        <div className="bg-destructive text-destructive-foreground p-4">
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            <span className="font-medium">{unreadCount} Failed Item{unreadCount > 1 ? "s" : ""} Reported</span>
+            <Bell className="w-6 h-6" />
+            <span className="font-medium text-lg">{unreadCount} Failed Item{unreadCount > 1 ? "s" : ""} Reported</span>
           </div>
-          <ScrollArea className="mt-2 max-h-32">
+          <ScrollArea className="mt-3 max-h-40">
             {notifications?.map((n) => (
               <div
                 key={n.id}
-                className="flex items-center justify-between py-1.5 border-b border-destructive-foreground/20 last:border-0"
+                className="flex items-center justify-between py-2 border-b border-destructive-foreground/20 last:border-0"
               >
-                <div className="text-sm">
+                <div className="text-base">
                   <span className="font-medium">{n.forklift_name}</span>
-                  <span className="mx-1">•</span>
+                  <span className="mx-2">•</span>
                   <span>{n.question_text}</span>
                   <span className="ml-2 opacity-70">Badge: {n.badge_number}</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 hover:bg-destructive-foreground/10"
+                  className="h-10 w-10 hover:bg-destructive-foreground/10"
                   onClick={() => handleDismissNotification(n.id)}
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </Button>
               </div>
             ))}
@@ -161,86 +162,97 @@ export function AdminPage() {
       )}
 
       {/* Tabs */}
-      <Tabs defaultValue="submissions" className="p-3">
-        <TabsList className="w-full grid grid-cols-3">
-          <TabsTrigger value="submissions" className="text-xs">
+      <Tabs defaultValue="submissions" className="p-4">
+        <TabsList className="w-full grid grid-cols-4 h-12">
+          <TabsTrigger value="submissions" className="text-sm">
             <ClipboardList className="w-4 h-4 mr-1" />
             History
           </TabsTrigger>
-          <TabsTrigger value="questions" className="text-xs">
+          <TabsTrigger value="questions" className="text-sm">
             <Check className="w-4 h-4 mr-1" />
             Questions
           </TabsTrigger>
-          <TabsTrigger value="settings" className="text-xs">
+          <TabsTrigger value="drivers" className="text-sm">
+            <Users className="w-4 h-4 mr-1" />
+            Drivers
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="text-sm">
             <Truck className="w-4 h-4 mr-1" />
-            Settings
+            Forklifts
           </TabsTrigger>
         </TabsList>
 
         {/* Submissions Tab */}
-        <TabsContent value="submissions" className="mt-3 space-y-2">
+        <TabsContent value="submissions" className="mt-4 space-y-3">
           {submissions?.map((s) => (
             <Card key={s.id} className="overflow-hidden">
-              <div className="flex items-center p-3">
+              <div className="flex items-center p-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{s.forklift_units?.name}</span>
+                    <span className="font-medium text-lg">{s.forklift_units?.name}</span>
                     {s.has_failures && (
-                      <Badge variant="destructive" className="text-xs">Failed</Badge>
+                      <Badge variant="destructive">Failed</Badge>
                     )}
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-base text-muted-foreground">
                     Badge: {s.badge_number} • {format(new Date(s.submitted_at), "MMM d, HH:mm")}
                   </div>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="h-12 w-12"
                     onClick={() => setSelectedSubmission(s.id)}
                   >
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-5 h-5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-destructive"
+                    className="text-destructive h-12 w-12"
                     onClick={() => {
                       deleteSubmission.mutate(s.id);
                       toast.success("Submission deleted");
                     }}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                   </Button>
                 </div>
               </div>
             </Card>
           ))}
           {submissions?.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No submissions yet</p>
+            <p className="text-center text-muted-foreground py-8 text-lg">No submissions yet</p>
           )}
         </TabsContent>
 
         {/* Questions Tab */}
-        <TabsContent value="questions" className="mt-3 space-y-2">
+        <TabsContent value="questions" className="mt-4 space-y-3">
           {questions?.map((q) => (
-            <Card key={q.id} className="p-3">
-              <div className="flex items-center justify-between">
+            <Card key={q.id} className="p-4">
+              <div className="flex items-center justify-between gap-4">
                 <div className="flex-1">
-                  <p className="font-medium text-sm">{q.question_text}</p>
-                  <Badge variant="outline" className="text-xs mt-1">{q.category}</Badge>
+                  <p className="font-medium text-lg">{q.question_text}</p>
+                  <Badge variant="outline" className="mt-1">{q.category}</Badge>
                 </div>
                 <Switch
                   checked={q.is_active}
                   onCheckedChange={(checked) => toggleQuestion.mutate({ id: q.id, isActive: checked })}
+                  className="scale-125"
                 />
               </div>
             </Card>
           ))}
         </TabsContent>
 
+        {/* Drivers Tab */}
+        <TabsContent value="drivers" className="mt-4">
+          <DriversTab />
+        </TabsContent>
+
         {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-3">
+        <TabsContent value="settings" className="mt-4">
           <SettingsTab forklifts={forklifts || []} />
         </TabsContent>
       </Tabs>
@@ -249,20 +261,21 @@ export function AdminPage() {
       <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Checklist Details</DialogTitle>
+            <DialogTitle className="text-xl">Checklist Details</DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-96">
-            <div className="space-y-2">
+            <div className="space-y-3">
               {responses?.map((r) => (
-                <div key={r.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div key={r.id} className="flex items-center justify-between py-3 border-b border-border last:border-0">
                   <div className="flex-1">
-                    <p className="text-sm">{r.forklift_checklist_questions?.question_text}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-base">{r.forklift_checklist_questions?.question_text}</p>
+                    <p className="text-sm text-muted-foreground">
                       {format(new Date(r.timestamp), "HH:mm:ss")}
                     </p>
                   </div>
                   <Badge
                     variant={r.status === "pass" ? "default" : r.status === "fail" ? "destructive" : "secondary"}
+                    className="text-base px-3 py-1"
                   >
                     {r.status.toUpperCase()}
                   </Badge>

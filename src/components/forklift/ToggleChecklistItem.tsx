@@ -49,7 +49,7 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 border-2 text-left ${getButtonStyles()}`}
+        className={`w-full py-4 px-5 rounded-lg font-medium text-lg transition-all duration-200 border-2 text-left ${getButtonStyles()}`}
       >
         {label}
       </button>
@@ -58,7 +58,7 @@ export function ToggleChecklistItem({
           placeholder="Required: Describe the issue..."
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
-          className="w-full bg-input border border-border rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full bg-input border border-border rounded-lg p-4 text-lg text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           rows={2}
         />
       )}
