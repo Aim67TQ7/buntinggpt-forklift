@@ -1334,6 +1334,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
+          label: string | null
           question_text: string
           sort_order: number
         }
@@ -1342,6 +1343,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          label?: string | null
           question_text: string
           sort_order?: number
         }
@@ -1350,6 +1352,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          label?: string | null
           question_text?: string
           sort_order?: number
         }

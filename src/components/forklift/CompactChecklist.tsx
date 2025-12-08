@@ -125,32 +125,32 @@ export function CompactChecklist() {
   if (forkliftsLoading || questionsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-28">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary p-4 shadow-lg">
+      <div className="sticky top-0 z-10 bg-primary p-5 shadow-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
-            <h1 className="text-lg font-bold text-primary-foreground">FORKLIFT CHECK</h1>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Logo" className="w-14 h-14 object-contain" />
+            <h1 className="text-xl font-bold text-primary-foreground">FORKLIFT CHECK</h1>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-foreground/10 h-10 w-10"
+            className="text-primary-foreground hover:bg-primary-foreground/10 h-14 w-14"
             onClick={() => navigate("/admin")}
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-8 h-8" />
           </Button>
         </div>
       </div>
 
-      <div className="p-4 space-y-5">
+      <div className="p-5 space-y-6">
         {/* Employee ID */}
         <div className="space-y-2">
           <Label className="text-foreground text-lg">
@@ -162,13 +162,13 @@ export function CompactChecklist() {
               placeholder="Enter badge number"
               value={badgeNumber}
               onChange={(e) => setBadgeNumber(e.target.value)}
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 h-14 text-xl"
+              className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-16 h-16 text-lg"
               maxLength={10}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              {validateBadge.isPending && <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />}
-              {badgeValid === true && <CheckCircle2 className="w-6 h-6 text-success" />}
-              {badgeValid === false && <AlertCircle className="w-6 h-6 text-destructive" />}
+            <div className="absolute right-5 top-1/2 -translate-y-1/2">
+              {validateBadge.isPending && <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />}
+              {badgeValid === true && <CheckCircle2 className="w-8 h-8 text-success" />}
+              {badgeValid === false && <AlertCircle className="w-8 h-8 text-destructive" />}
             </div>
           </div>
           {employeeName && (
@@ -183,12 +183,12 @@ export function CompactChecklist() {
         <div className="space-y-2">
           <Label className="text-foreground text-lg">Forklift</Label>
           <Select value={selectedForklift} onValueChange={setSelectedForklift}>
-            <SelectTrigger className="bg-input border-border text-foreground h-14 text-xl">
+            <SelectTrigger className="bg-input border-border text-foreground h-16 text-lg">
               <SelectValue placeholder="Select forklift" />
             </SelectTrigger>
             <SelectContent>
               {forklifts?.map((f) => (
-                <SelectItem key={f.id} value={f.id} className="text-lg py-3">
+                <SelectItem key={f.id} value={f.id} className="text-lg py-4">
                   {f.name} ({f.unit_number})
                 </SelectItem>
               ))}
@@ -197,11 +197,12 @@ export function CompactChecklist() {
         </div>
 
         {/* Checklist Items */}
-        <div className="space-y-3 pt-2">
-          {questions?.map((q) => (
+        <div className="space-y-4 pt-3">
+          {questions?.map((q, index) => (
             <ToggleChecklistItem
               key={q.id}
               label={q.question_text}
+              questionLabel={(q as any).label || `Q${index + 1}`}
               status={responses[q.id]?.status || null}
               comment={responses[q.id]?.comment || ""}
               onStatusChange={(status) => handleStatusChange(q.id, status)}
@@ -216,16 +217,16 @@ export function CompactChecklist() {
       </div>
 
       {/* Submit Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 p-5 bg-background border-t border-border safe-bottom">
         <Button
-          className="w-full h-16 text-xl font-semibold"
+          className="w-full h-20 text-xl font-semibold"
           disabled={!canSubmit || submitChecklist.isPending}
           onClick={handleSubmit}
         >
           {submitChecklist.isPending ? (
-            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            <Loader2 className="w-8 h-8 animate-spin mr-3" />
           ) : (
-            <Send className="w-6 h-6 mr-2" />
+            <Send className="w-8 h-8 mr-3" />
           )}
           Submit Checklist
         </Button>

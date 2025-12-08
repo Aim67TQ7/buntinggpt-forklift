@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save } from "lucide-react";
+import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save, Edit2 } from "lucide-react";
 import { AdminHelpDialog } from "./AdminHelpDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   useFailNotifications,
   useSubmissions,
@@ -19,6 +20,7 @@ import {
   useForklifts,
   useMarkNotificationRead,
   useToggleQuestion,
+  useUpdateQuestion,
   useDeleteSubmission,
   useSubmissionResponses,
   useUpdateAdminNotes,
@@ -34,6 +36,9 @@ export function AdminPage() {
   const [passcode, setPasscode] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
+  const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+  const [editQuestionText, setEditQuestionText] = useState("");
+  const [editQuestionLabel, setEditQuestionLabel] = useState("");
 
   const { data: notifications } = useFailNotifications();
   const { data: submissions } = useSubmissions();
@@ -42,6 +47,7 @@ export function AdminPage() {
   const { data: responses } = useSubmissionResponses(selectedSubmission);
   const markRead = useMarkNotificationRead();
   const toggleQuestion = useToggleQuestion();
+  const updateQuestion = useUpdateQuestion();
   const deleteSubmission = useDeleteSubmission();
   const updateAdminNotes = useUpdateAdminNotes();
 
@@ -62,32 +68,50 @@ export function AdminPage() {
     markRead.mutate(id);
   };
 
+  const handleEditQuestion = (q: any) => {
+    setEditingQuestion(q.id);
+    setEditQuestionText(q.question_text);
+    setEditQuestionLabel(q.label || `Q${q.sort_order}`);
+  };
+
+  const handleSaveQuestion = () => {
+    if (editingQuestion) {
+      updateQuestion.mutate({
+        id: editingQuestion,
+        questionText: editQuestionText,
+        label: editQuestionLabel,
+      });
+      setEditingQuestion(null);
+      toast.success("Question updated");
+    }
+  };
+
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-5">
+        <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-center text-2xl">Admin Access</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-center mb-6">
-              <div className="flex gap-3">
+            <div className="flex justify-center mb-8">
+              <div className="flex gap-4">
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`w-5 h-5 rounded-full ${
+                    className={`w-6 h-6 rounded-full ${
                       i < passcode.length ? "bg-primary" : "bg-muted"
                     }`}
                   />
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "←"].map((digit, i) => (
                 <Button
                   key={i}
                   variant="outline"
-                  className="h-16 text-2xl font-medium"
+                  className="h-20 text-2xl font-medium"
                   disabled={digit === ""}
                   onClick={() => {
                     if (digit === "←") {
@@ -103,7 +127,7 @@ export function AdminPage() {
             </div>
             <Button
               variant="ghost"
-              className="w-full mt-4 text-lg h-12"
+              className="w-full mt-5 text-lg h-14"
               onClick={() => navigate("/")}
             >
               Back to Checklist
@@ -119,15 +143,15 @@ export function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary text-primary-foreground p-4 shadow-lg">
-        <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-primary text-primary-foreground p-5 shadow-lg">
+        <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-foreground/10 h-12 w-12"
+            className="text-primary-foreground hover:bg-primary-foreground/10 h-14 w-14"
             onClick={() => navigate("/")}
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-8 h-8" />
           </Button>
           <h1 className="text-xl font-bold flex-1">Admin Panel</h1>
           <AdminHelpDialog />
@@ -136,30 +160,30 @@ export function AdminPage() {
 
       {/* Notifications Banner */}
       {unreadCount > 0 && (
-        <div className="bg-destructive text-destructive-foreground p-4">
-          <div className="flex items-center gap-2">
-            <Bell className="w-6 h-6" />
+        <div className="bg-destructive text-destructive-foreground p-5">
+          <div className="flex items-center gap-3">
+            <Bell className="w-8 h-8" />
             <span className="font-medium text-lg">{unreadCount} Failed Item{unreadCount > 1 ? "s" : ""} Reported</span>
           </div>
-          <ScrollArea className="mt-3 max-h-40">
+          <ScrollArea className="mt-4 max-h-48">
             {notifications?.map((n) => (
               <div
                 key={n.id}
-                className="flex items-center justify-between py-2 border-b border-destructive-foreground/20 last:border-0"
+                className="flex items-center justify-between py-3 border-b border-destructive-foreground/20 last:border-0"
               >
                 <div className="text-base">
                   <span className="font-medium">{n.forklift_name}</span>
                   <span className="mx-2">•</span>
                   <span>{n.question_text}</span>
-                  <span className="ml-2 opacity-70">Badge: {n.badge_number}</span>
+                  <span className="ml-3 opacity-70">Badge: {n.badge_number}</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 hover:bg-destructive-foreground/10"
+                  className="h-12 w-12 hover:bg-destructive-foreground/10"
                   onClick={() => handleDismissNotification(n.id)}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </Button>
               </div>
             ))}
@@ -168,143 +192,186 @@ export function AdminPage() {
       )}
 
       {/* Tabs */}
-      <Tabs defaultValue="submissions" className="p-4">
-        <TabsList className="w-full grid grid-cols-4 h-12">
-          <TabsTrigger value="submissions" className="text-sm">
-            <ClipboardList className="w-4 h-4 mr-1" />
+      <Tabs defaultValue="submissions" className="p-5">
+        <TabsList className="w-full grid grid-cols-4 h-14">
+          <TabsTrigger value="submissions" className="text-base">
+            <ClipboardList className="w-5 h-5 mr-2" />
             History
           </TabsTrigger>
-          <TabsTrigger value="questions" className="text-sm">
-            <Check className="w-4 h-4 mr-1" />
+          <TabsTrigger value="questions" className="text-base">
+            <Check className="w-5 h-5 mr-2" />
             Questions
           </TabsTrigger>
-          <TabsTrigger value="drivers" className="text-sm">
-            <Users className="w-4 h-4 mr-1" />
+          <TabsTrigger value="drivers" className="text-base">
+            <Users className="w-5 h-5 mr-2" />
             Drivers
           </TabsTrigger>
-          <TabsTrigger value="settings" className="text-sm">
-            <Truck className="w-4 h-4 mr-1" />
+          <TabsTrigger value="settings" className="text-base">
+            <Truck className="w-5 h-5 mr-2" />
             Forklifts
           </TabsTrigger>
         </TabsList>
 
         {/* Submissions Tab */}
-        <TabsContent value="submissions" className="mt-4 space-y-3">
+        <TabsContent value="submissions" className="mt-5 space-y-4">
           {submissions?.map((s) => (
             <Card key={s.id} className="overflow-hidden">
-              <div className="flex items-center p-4">
+              <div className="flex items-center p-5">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <span className="font-medium text-lg">{s.forklift_units?.name}</span>
                     {s.has_failures && (
-                      <Badge variant="destructive">Failed</Badge>
+                      <Badge variant="destructive" className="text-base px-3 py-1">Failed</Badge>
                     )}
                   </div>
-                  <div className="text-base text-muted-foreground">
+                  <div className="text-base text-muted-foreground mt-1">
                     Badge: {s.badge_number} • {format(new Date(s.submitted_at), "MMM d, HH:mm")}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-12 w-12"
+                    className="h-14 w-14"
                     onClick={() => setSelectedSubmission(s.id)}
                   >
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-6 h-6" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-destructive h-12 w-12"
+                    className="text-destructive h-14 w-14"
                     onClick={() => {
                       deleteSubmission.mutate(s.id);
                       toast.success("Submission deleted");
                     }}
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-6 h-6" />
                   </Button>
                 </div>
               </div>
             </Card>
           ))}
           {submissions?.length === 0 && (
-            <p className="text-center text-muted-foreground py-8 text-lg">No submissions yet</p>
+            <p className="text-center text-muted-foreground py-10 text-lg">No submissions yet</p>
           )}
         </TabsContent>
 
         {/* Questions Tab */}
-        <TabsContent value="questions" className="mt-4 space-y-3">
-          {questions?.map((q) => (
-            <Card key={q.id} className="p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <p className="font-medium text-lg">{q.question_text}</p>
-                  <Badge variant="outline" className="mt-1">{q.category}</Badge>
+        <TabsContent value="questions" className="mt-5 space-y-4">
+          {questions?.map((q, index) => (
+            <Card key={q.id} className="p-5">
+              {editingQuestion === q.id ? (
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <Input
+                      value={editQuestionLabel}
+                      onChange={(e) => setEditQuestionLabel(e.target.value)}
+                      placeholder="Label (e.g., Q1)"
+                      className="w-24 h-14 text-lg"
+                    />
+                    <Input
+                      value={editQuestionText}
+                      onChange={(e) => setEditQuestionText(e.target.value)}
+                      placeholder="Question text"
+                      className="flex-1 h-14 text-lg"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button onClick={handleSaveQuestion} className="h-12">
+                      <Save className="w-5 h-5 mr-2" />
+                      Save
+                    </Button>
+                    <Button variant="outline" onClick={() => setEditingQuestion(null)} className="h-12">
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
-                <Switch
-                  checked={q.is_active}
-                  onCheckedChange={(checked) => toggleQuestion.mutate({ id: q.id, isActive: checked })}
-                  className="scale-125"
-                />
-              </div>
+              ) : (
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className="text-base px-3 py-1">
+                        {(q as any).label || `Q${index + 1}`}
+                      </Badge>
+                      <p className="font-medium text-lg">{q.question_text}</p>
+                    </div>
+                    <Badge variant="secondary" className="mt-2 text-sm">{q.category}</Badge>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-12 w-12"
+                      onClick={() => handleEditQuestion(q)}
+                    >
+                      <Edit2 className="w-5 h-5" />
+                    </Button>
+                    <Switch
+                      checked={q.is_active}
+                      onCheckedChange={(checked) => toggleQuestion.mutate({ id: q.id, isActive: checked })}
+                      className="scale-150"
+                    />
+                  </div>
+                </div>
+              )}
             </Card>
           ))}
         </TabsContent>
 
         {/* Drivers Tab */}
-        <TabsContent value="drivers" className="mt-4">
+        <TabsContent value="drivers" className="mt-5">
           <DriversTab />
         </TabsContent>
 
         {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-4">
+        <TabsContent value="settings" className="mt-5">
           <SettingsTab forklifts={forklifts || []} />
         </TabsContent>
       </Tabs>
 
       {/* Submission Detail Dialog */}
       <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl">Checklist Details</DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[70vh]">
-            <div className="space-y-4 pr-2">
+            <div className="space-y-5 pr-3">
               {responses?.map((r) => (
-                <div key={r.id} className="py-3 border-b border-border last:border-0">
+                <div key={r.id} className="py-4 border-b border-border last:border-0">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <p className="text-base">{r.forklift_checklist_questions?.question_text}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground mt-1">
                         {format(new Date(r.timestamp), "HH:mm:ss")}
                       </p>
                     </div>
                     <Badge
                       variant={r.status === "fail" ? "destructive" : "secondary"}
-                      className={`text-base px-3 py-1 ${r.status === "pass" ? "bg-success text-success-foreground" : ""}`}
+                      className={`text-base px-4 py-2 ${r.status === "pass" ? "bg-success text-success-foreground" : ""}`}
                     >
                       {r.status.toUpperCase()}
                     </Badge>
                   </div>
                   {r.status === "fail" && (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-4 space-y-3">
                       <Textarea
                         placeholder="Add repair notes..."
                         value={adminNotes[r.id] ?? r.admin_notes ?? ""}
                         onChange={(e) => setAdminNotes(prev => ({ ...prev, [r.id]: e.target.value }))}
-                        className="min-h-[60px] text-sm"
+                        className="min-h-[80px] text-base"
                       />
                       <Button
-                        size="sm"
                         onClick={() => {
                           const notes = adminNotes[r.id] ?? r.admin_notes ?? "";
                           updateAdminNotes.mutate({ responseId: r.id, adminNotes: notes });
                           toast.success("Notes saved");
                         }}
                         disabled={updateAdminNotes.isPending}
+                        className="h-12"
                       >
-                        <Save className="w-4 h-4 mr-1" />
+                        <Save className="w-5 h-5 mr-2" />
                         Save Notes
                       </Button>
                     </div>

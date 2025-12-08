@@ -15,6 +15,7 @@ export interface ChecklistQuestion {
   category: string;
   sort_order: number;
   is_active: boolean;
+  label?: string;
 }
 
 export interface ChecklistSubmission {
@@ -300,6 +301,24 @@ export function useToggleQuestion() {
       const { error } = await supabase
         .from("forklift_checklist_questions")
         .update({ is_active: isActive })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklist-questions"] });
+      queryClient.invalidateQueries({ queryKey: ["active-questions"] });
+    },
+  });
+}
+
+export function useUpdateQuestion() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, questionText, label }: { id: string; questionText: string; label?: string }) => {
+      const { error } = await supabase
+        .from("forklift_checklist_questions")
+        .update({ question_text: questionText, label })
         .eq("id", id);
       if (error) throw error;
     },
