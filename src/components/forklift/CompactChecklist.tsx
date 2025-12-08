@@ -4,16 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CompactChecklistItem } from "./CompactChecklistItem";
+import { ToggleChecklistItem } from "./ToggleChecklistItem";
 import { useForklifts, useActiveQuestions, useValidateBadge, useSubmitChecklist } from "@/hooks/useForkliftData";
 
-type Status = "pass" | "fail" | "na" | null;
+type Status = "yes" | "no" | null;
 
 interface ResponseItem {
-  questionId: string;
   status: Status;
-  timestamp: Date | null;
+  comment: string;
 }
 
 export function CompactChecklist() {
@@ -39,7 +39,7 @@ export function CompactChecklist() {
 
   // Validate badge on change
   useEffect(() => {
-    if (badgeNumber.length >= 3) {
+    if (badgeNumber.length >= 2) {
       const timer = setTimeout(() => {
         validateBadge.mutate(badgeNumber, {
           onSuccess: (result) => {
@@ -59,22 +59,41 @@ export function CompactChecklist() {
     setResponses((prev) => ({
       ...prev,
       [questionId]: {
-        questionId,
+        ...prev[questionId],
         status,
-        timestamp: status ? new Date() : null,
+        comment: status !== "no" ? "" : prev[questionId]?.comment || "",
       },
     }));
   };
 
-  const allAnswered = questions?.every((q) => responses[q.id]?.status) ?? false;
-  const canSubmit = badgeValid && selectedForklift && allAnswered;
+  const handleCommentChange = (questionId: string, comment: string) => {
+    setResponses((prev) => ({
+      ...prev,
+      [questionId]: {
+        ...prev[questionId],
+        comment,
+      },
+    }));
+  };
+
+  // Check all questions answered and all "no" items have comments
+  const allAnswered = questions?.every((q) => responses[q.id]?.status !== undefined && responses[q.id]?.status !== null) ?? false;
+  const allCommentsProvided = questions?.every((q) => {
+    const r = responses[q.id];
+    if (r?.status === "no") {
+      return r.comment?.trim().length > 0;
+    }
+    return true;
+  }) ?? true;
+  
+  const canSubmit = badgeValid && selectedForklift && allAnswered && allCommentsProvided;
 
   const handleSubmit = async () => {
     if (!canSubmit || !questions) return;
 
     const responseData = questions.map((q) => ({
       questionId: q.id,
-      status: responses[q.id].status!,
+      status: responses[q.id].status === "yes" ? "pass" as const : responses[q.id].status === "no" ? "fail" as const : "na" as const,
       questionText: q.question_text,
     }));
 
@@ -111,15 +130,20 @@ export function CompactChecklist() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary text-primary-foreground p-3 shadow-lg">
+      <div className="sticky top-0 z-10 bg-card border-b border-border p-4 shadow-lg">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold">Forklift Checklist</h1>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">FL</span>
+            </div>
+            <h1 className="text-lg font-bold text-primary">FORKLIFT CHECKLIST</h1>
+          </div>
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-foreground/10"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => navigate("/admin")}
           >
             <Settings className="w-5 h-5" />
@@ -127,59 +151,73 @@ export function CompactChecklist() {
         </div>
       </div>
 
-      {/* Badge & Forklift Selection */}
-      <div className="p-3 space-y-3 bg-card border-b border-border">
-        <div className="flex gap-2 items-center">
-          <div className="flex-1 relative">
+      <div className="p-4 space-y-4">
+        {/* Employee ID */}
+        <div className="space-y-2">
+          <Label className="text-foreground">
+            Employee ID <span className="text-primary">*</span>
+          </Label>
+          <div className="relative">
             <Input
               type="text"
-              placeholder="Badge Number"
+              placeholder="2-4 digits"
               value={badgeNumber}
               onChange={(e) => setBadgeNumber(e.target.value)}
-              className="pr-10"
+              className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
+              maxLength={4}
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {validateBadge.isPending && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
-              {badgeValid === true && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-              {badgeValid === false && <AlertCircle className="w-4 h-4 text-red-600" />}
+              {badgeValid === true && <CheckCircle2 className="w-4 h-4 text-success" />}
+              {badgeValid === false && <AlertCircle className="w-4 h-4 text-destructive" />}
             </div>
           </div>
+          {employeeName && (
+            <p className="text-sm text-muted-foreground">{employeeName}</p>
+          )}
+          {badgeValid === false && badgeNumber.length >= 2 && (
+            <p className="text-sm text-destructive">Invalid badge number</p>
+          )}
+        </div>
+
+        {/* Forklift Selection */}
+        <div className="space-y-2">
+          <Label className="text-foreground">Forklift</Label>
           <Select value={selectedForklift} onValueChange={setSelectedForklift}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Forklift" />
+            <SelectTrigger className="bg-input border-border text-foreground">
+              <SelectValue placeholder="Select forklift" />
             </SelectTrigger>
             <SelectContent>
               {forklifts?.map((f) => (
                 <SelectItem key={f.id} value={f.id}>
-                  {f.name}
+                  {f.name} ({f.unit_number})
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        {employeeName && (
-          <p className="text-sm text-muted-foreground">Operator: {employeeName}</p>
-        )}
-        {badgeValid === false && (
-          <p className="text-sm text-destructive">Invalid badge number</p>
-        )}
-      </div>
 
-      {/* Checklist Items */}
-      <div className="bg-card">
-        {questions?.map((q) => (
-          <CompactChecklistItem
-            key={q.id}
-            label={q.question_text}
-            status={responses[q.id]?.status || null}
-            timestamp={responses[q.id]?.timestamp || null}
-            onStatusChange={(status) => handleStatusChange(q.id, status)}
-          />
-        ))}
+        {/* Checklist Items */}
+        <div className="space-y-3 pt-2">
+          {questions?.map((q) => (
+            <ToggleChecklistItem
+              key={q.id}
+              label={q.question_text}
+              status={responses[q.id]?.status || null}
+              comment={responses[q.id]?.comment || ""}
+              onStatusChange={(status) => handleStatusChange(q.id, status)}
+              onCommentChange={(comment) => handleCommentChange(q.id, comment)}
+            />
+          ))}
+        </div>
+
+        {!allCommentsProvided && (
+          <p className="text-sm text-destructive">Please provide comments for all failed items</p>
+        )}
       </div>
 
       {/* Submit Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-background border-t border-border">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border safe-bottom">
         <Button
           className="w-full h-12 text-lg font-semibold"
           disabled={!canSubmit || submitChecklist.isPending}
