@@ -88,30 +88,30 @@ export function AdminPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-5">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl">Admin Access</CardTitle>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-3">
+        <Card className="w-full max-w-xs">
+          <CardHeader className="py-3">
+            <CardTitle className="text-center text-lg">Admin Access</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex justify-center mb-8">
-              <div className="flex gap-4">
+          <CardContent className="p-3">
+            <div className="flex justify-center mb-4">
+              <div className="flex gap-2">
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`w-6 h-6 rounded-full ${
+                    className={`w-4 h-4 rounded-full ${
                       i < passcode.length ? "bg-primary" : "bg-muted"
                     }`}
                   />
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "←"].map((digit, i) => (
                 <Button
                   key={i}
                   variant="outline"
-                  className="h-20 text-2xl font-medium"
+                  className="h-12 text-lg font-medium"
                   disabled={digit === ""}
                   onClick={() => {
                     if (digit === "←") {
@@ -127,7 +127,7 @@ export function AdminPage() {
             </div>
             <Button
               variant="ghost"
-              className="w-full mt-5 text-lg h-14"
+              className="w-full mt-3 text-base h-10"
               onClick={() => navigate("/")}
             >
               Back to Checklist
@@ -263,20 +263,12 @@ export function AdminPage() {
             <Card key={q.id} className="p-5">
               {editingQuestion === q.id ? (
                 <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <Input
-                      value={editQuestionLabel}
-                      onChange={(e) => setEditQuestionLabel(e.target.value)}
-                      placeholder="Label (e.g., Q1)"
-                      className="w-24 h-14 text-lg"
-                    />
-                    <Input
-                      value={editQuestionText}
-                      onChange={(e) => setEditQuestionText(e.target.value)}
-                      placeholder="Question text"
-                      className="flex-1 h-14 text-lg"
-                    />
-                  </div>
+                  <Input
+                    value={editQuestionText}
+                    onChange={(e) => setEditQuestionText(e.target.value)}
+                    placeholder="Question text"
+                    className="w-full h-14 text-lg"
+                  />
                   <div className="flex gap-3">
                     <Button onClick={handleSaveQuestion} className="h-12">
                       <Save className="w-5 h-5 mr-2" />
