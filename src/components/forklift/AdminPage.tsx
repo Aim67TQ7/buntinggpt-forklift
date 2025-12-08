@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users } from "lucide-react";
+import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save } from "lucide-react";
 import { AdminHelpDialog } from "./AdminHelpDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useFailNotifications,
   useSubmissions,
@@ -20,6 +21,7 @@ import {
   useToggleQuestion,
   useDeleteSubmission,
   useSubmissionResponses,
+  useUpdateAdminNotes,
 } from "@/hooks/useForkliftData";
 import { SettingsTab } from "./SettingsTab";
 import { DriversTab } from "./DriversTab";
@@ -31,6 +33,7 @@ export function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<string | null>(null);
+  const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
 
   const { data: notifications } = useFailNotifications();
   const { data: submissions } = useSubmissions();
@@ -40,6 +43,7 @@ export function AdminPage() {
   const markRead = useMarkNotificationRead();
   const toggleQuestion = useToggleQuestion();
   const deleteSubmission = useDeleteSubmission();
+  const updateAdminNotes = useUpdateAdminNotes();
 
   const handlePasscode = (digit: string) => {
     const newPasscode = passcode + digit;
@@ -265,22 +269,46 @@ export function AdminPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Checklist Details</DialogTitle>
           </DialogHeader>
-          <ScrollArea className="max-h-96">
-            <div className="space-y-3">
+          <ScrollArea className="max-h-[70vh]">
+            <div className="space-y-4 pr-2">
               {responses?.map((r) => (
-                <div key={r.id} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                  <div className="flex-1">
-                    <p className="text-base">{r.forklift_checklist_questions?.question_text}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(r.timestamp), "HH:mm:ss")}
-                    </p>
+                <div key={r.id} className="py-3 border-b border-border last:border-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p className="text-base">{r.forklift_checklist_questions?.question_text}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(r.timestamp), "HH:mm:ss")}
+                      </p>
+                    </div>
+                    <Badge
+                      variant={r.status === "fail" ? "destructive" : "secondary"}
+                      className={`text-base px-3 py-1 ${r.status === "pass" ? "bg-success text-success-foreground" : ""}`}
+                    >
+                      {r.status.toUpperCase()}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant={r.status === "pass" ? "default" : r.status === "fail" ? "destructive" : "secondary"}
-                    className="text-base px-3 py-1"
-                  >
-                    {r.status.toUpperCase()}
-                  </Badge>
+                  {r.status === "fail" && (
+                    <div className="mt-3 space-y-2">
+                      <Textarea
+                        placeholder="Add repair notes..."
+                        value={adminNotes[r.id] ?? r.admin_notes ?? ""}
+                        onChange={(e) => setAdminNotes(prev => ({ ...prev, [r.id]: e.target.value }))}
+                        className="min-h-[60px] text-sm"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          const notes = adminNotes[r.id] ?? r.admin_notes ?? "";
+                          updateAdminNotes.mutate({ responseId: r.id, adminNotes: notes });
+                          toast.success("Notes saved");
+                        }}
+                        disabled={updateAdminNotes.isPending}
+                      >
+                        <Save className="w-4 h-4 mr-1" />
+                        Save Notes
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
