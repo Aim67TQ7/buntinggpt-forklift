@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Settings, Send, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { ChecklistHelpDialog } from "./ChecklistHelpDialog";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -139,14 +140,17 @@ export function CompactChecklist() {
             <img src={logo} alt="Logo" className="w-12 h-12 object-contain" />
             <h1 className="text-xl font-bold text-primary">FORKLIFT CHECKLIST</h1>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground h-12 w-12"
-            onClick={() => navigate("/admin")}
-          >
-            <Settings className="w-6 h-6" />
-          </Button>
+          <div className="flex items-center">
+            <ChecklistHelpDialog />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground h-12 w-12"
+              onClick={() => navigate("/admin")}
+            >
+              <Settings className="w-6 h-6" />
+            </Button>
+          </div>
         </div>
       </div>
 

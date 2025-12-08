@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users } from "lucide-react";
+import { AdminHelpDialog } from "./AdminHelpDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -125,6 +126,7 @@ export function AdminPage() {
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <h1 className="text-xl font-bold flex-1">Admin Panel</h1>
+          <AdminHelpDialog />
         </div>
       </div>
 
