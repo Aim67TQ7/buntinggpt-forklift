@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleChecklistItem } from "./ToggleChecklistItem";
 import { useForklifts, useActiveQuestions, useValidateBadge, useSubmitChecklist } from "@/hooks/useForkliftData";
+import logo from "@/assets/logo.png";
 
 type Status = "yes" | "no" | null;
 
@@ -134,10 +135,8 @@ export function CompactChecklist() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-card border-b border-border p-4 shadow-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">FL</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
             <h1 className="text-lg font-bold text-primary">FORKLIFT CHECKLIST</h1>
           </div>
           <Button
