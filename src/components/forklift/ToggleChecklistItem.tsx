@@ -49,7 +49,7 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-4 px-5 rounded-lg font-medium text-lg transition-all duration-200 border-2 text-left ${getButtonStyles()}`}
+        className={`w-full py-2 px-4 rounded-lg font-medium text-lg transition-all duration-200 border-2 text-left ${getButtonStyles()}`}
       >
         {label}
       </button>
