@@ -1328,6 +1328,182 @@ export type Database = {
         }
         Relationships: []
       }
+      forklift_checklist_questions: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          question_text: string
+          sort_order: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          question_text: string
+          sort_order?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          question_text?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      forklift_checklist_responses: {
+        Row: {
+          id: string
+          question_id: string
+          status: string
+          submission_id: string
+          timestamp: string | null
+        }
+        Insert: {
+          id?: string
+          question_id: string
+          status: string
+          submission_id: string
+          timestamp?: string | null
+        }
+        Update: {
+          id?: string
+          question_id?: string
+          status?: string
+          submission_id?: string
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forklift_checklist_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forklift_checklist_responses_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forklift_checklist_submissions: {
+        Row: {
+          badge_number: string
+          forklift_id: string
+          has_failures: boolean | null
+          id: string
+          submitted_at: string | null
+        }
+        Insert: {
+          badge_number: string
+          forklift_id: string
+          has_failures?: boolean | null
+          id?: string
+          submitted_at?: string | null
+        }
+        Update: {
+          badge_number?: string
+          forklift_id?: string
+          has_failures?: boolean | null
+          id?: string
+          submitted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forklift_checklist_submissions_forklift_id_fkey"
+            columns: ["forklift_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forklift_fail_notifications: {
+        Row: {
+          badge_number: string
+          created_at: string | null
+          forklift_name: string
+          id: string
+          is_read: boolean | null
+          question_id: string
+          question_text: string
+          submission_id: string
+        }
+        Insert: {
+          badge_number: string
+          created_at?: string | null
+          forklift_name: string
+          id?: string
+          is_read?: boolean | null
+          question_id: string
+          question_text: string
+          submission_id: string
+        }
+        Update: {
+          badge_number?: string
+          created_at?: string | null
+          forklift_name?: string
+          id?: string
+          is_read?: boolean | null
+          question_id?: string
+          question_text?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forklift_fail_notifications_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forklift_fail_notifications_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forklift_units: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          unit_number: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          unit_number: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          unit_number?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       iframe_sessions: {
         Row: {
           created_at: string

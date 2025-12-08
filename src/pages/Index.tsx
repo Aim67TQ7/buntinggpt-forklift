@@ -1,7 +1,7 @@
-import { ForkliftChecklist } from "@/components/ForkliftChecklist";
+import { CompactChecklist } from "@/components/forklift/CompactChecklist";
 
 const Index = () => {
-  return <ForkliftChecklist />;
+  return <CompactChecklist />;
 };
 
 export default Index;
