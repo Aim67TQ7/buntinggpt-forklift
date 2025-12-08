@@ -1357,6 +1357,7 @@ export type Database = {
       }
       forklift_checklist_responses: {
         Row: {
+          admin_notes: string | null
           id: string
           question_id: string
           status: string
@@ -1364,6 +1365,7 @@ export type Database = {
           timestamp: string | null
         }
         Insert: {
+          admin_notes?: string | null
           id?: string
           question_id: string
           status: string
@@ -1371,6 +1373,7 @@ export type Database = {
           timestamp?: string | null
         }
         Update: {
+          admin_notes?: string | null
           id?: string
           question_id?: string
           status?: string
