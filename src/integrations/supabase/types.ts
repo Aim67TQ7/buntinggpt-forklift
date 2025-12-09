@@ -1168,6 +1168,7 @@ export type Database = {
           gdpr_consent_timestamp: string | null
           id: string
           job_level: Database["public"]["Enums"]["job_level"] | null
+          job_title: string | null
           location: Database["public"]["Enums"]["employee_location"] | null
           manager_id: string | null
           updated_at: string
@@ -1182,6 +1183,7 @@ export type Database = {
           gdpr_consent_timestamp?: string | null
           id?: string
           job_level?: Database["public"]["Enums"]["job_level"] | null
+          job_title?: string | null
           location?: Database["public"]["Enums"]["employee_location"] | null
           manager_id?: string | null
           updated_at?: string
@@ -1196,6 +1198,7 @@ export type Database = {
           gdpr_consent_timestamp?: string | null
           id?: string
           job_level?: Database["public"]["Enums"]["job_level"] | null
+          job_title?: string | null
           location?: Database["public"]["Enums"]["employee_location"] | null
           manager_id?: string | null
           updated_at?: string
@@ -3306,6 +3309,71 @@ export type Database = {
           },
         ]
       }
+      rvw_employee_census: {
+        Row: {
+          badge_number: string | null
+          department: string | null
+          email: string | null
+          employee_name: string
+          hire_date: string | null
+          id: string
+          imported_at: string | null
+          job_level: string | null
+          job_title: string | null
+          location: string | null
+          manager_email: string | null
+          manager_name: string | null
+          match_status: string | null
+          matched_emp_id: string | null
+          notes: string | null
+          processed: boolean | null
+        }
+        Insert: {
+          badge_number?: string | null
+          department?: string | null
+          email?: string | null
+          employee_name: string
+          hire_date?: string | null
+          id?: string
+          imported_at?: string | null
+          job_level?: string | null
+          job_title?: string | null
+          location?: string | null
+          manager_email?: string | null
+          manager_name?: string | null
+          match_status?: string | null
+          matched_emp_id?: string | null
+          notes?: string | null
+          processed?: boolean | null
+        }
+        Update: {
+          badge_number?: string | null
+          department?: string | null
+          email?: string | null
+          employee_name?: string
+          hire_date?: string | null
+          id?: string
+          imported_at?: string | null
+          job_level?: string | null
+          job_title?: string | null
+          location?: string | null
+          manager_email?: string | null
+          manager_name?: string | null
+          match_status?: string | null
+          matched_emp_id?: string | null
+          notes?: string | null
+          processed?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rvw_employee_census_matched_emp_id_fkey"
+            columns: ["matched_emp_id"]
+            isOneToOne: false
+            referencedRelation: "emps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rvw_goals: {
         Row: {
           actual_result: string | null
@@ -4930,6 +4998,15 @@ export type Database = {
           scope: string
           similarity: number
           user_id: string
+        }[]
+      }
+      process_employee_census: {
+        Args: never
+        Returns: {
+          matched_count: number
+          processed_count: number
+          unmatched_count: number
+          updated_managers: number
         }[]
       }
       rvw_calculate_competency_score: {
