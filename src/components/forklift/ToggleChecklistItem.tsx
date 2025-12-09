@@ -39,20 +39,20 @@ export function ToggleChecklistItem({
 
   const getButtonStyles = () => {
     if (status === "yes") {
-      return "bg-success text-success-foreground border-success shadow-lg shadow-success/40";
+      return "bg-success text-success-foreground";
     }
     if (status === "no") {
-      return "bg-destructive text-destructive-foreground border-destructive shadow-lg shadow-destructive/40";
+      return "bg-destructive text-destructive-foreground";
     }
-    return "bg-card text-foreground border-border hover:border-muted-foreground";
+    return "bg-muted text-foreground hover:bg-muted/80";
   };
 
   const getIcon = () => {
     if (status === "yes") {
-      return <Check className="w-6 h-6 shrink-0" />;
+      return <Check className="w-4 h-4 shrink-0" />;
     }
     if (status === "no") {
-      return <X className="w-6 h-6 shrink-0" />;
+      return <X className="w-4 h-4 shrink-0" />;
     }
     return null;
   };
@@ -62,15 +62,15 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-2 px-3 rounded-lg font-semibold text-base transition-all duration-200 border-2 flex items-center justify-between gap-2 ${getButtonStyles()}`}
+        className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors flex items-center justify-between gap-2 ${getButtonStyles()}`}
       >
         <div className="flex items-center gap-2 text-left">
           {questionLabel && (
-            <span className="font-bold text-primary bg-primary/10 px-2 py-0.5 rounded shrink-0 text-sm">
+            <span className="font-bold text-primary text-xs px-1.5 py-0.5 bg-primary/10 rounded shrink-0">
               {questionLabel}
             </span>
           )}
-          <span>{label}</span>
+          <span className="text-sm">{label}</span>
         </div>
         {getIcon()}
       </button>
@@ -79,7 +79,7 @@ export function ToggleChecklistItem({
           placeholder="Required: Describe the issue..."
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
-          className="w-full bg-input border border-border rounded-lg p-2 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full bg-muted border-0 rounded p-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring"
           rows={2}
         />
       )}
