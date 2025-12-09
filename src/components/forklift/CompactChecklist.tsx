@@ -191,13 +191,12 @@ export function CompactChecklist() {
           </Select>
         </div>
 
-        {/* Checklist Items */}
-        <div className="space-y-2 pt-1">
-          {questions?.map((q, index) => (
+        {/* Checklist Items - 2 column grid */}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          {questions?.map((q) => (
             <ToggleChecklistItem
               key={q.id}
               label={q.question_text}
-              questionLabel={(q as any).label || `Q${index + 1}`}
               status={responses[q.id]?.status || null}
               comment={responses[q.id]?.comment || ""}
               onStatusChange={(status) => handleStatusChange(q.id, status)}

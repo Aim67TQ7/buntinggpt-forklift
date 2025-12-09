@@ -5,7 +5,6 @@ type Status = "yes" | "no" | null;
 
 interface ToggleChecklistItemProps {
   label: string;
-  questionLabel?: string;
   status: Status;
   comment: string;
   onStatusChange: (status: Status) => void;
@@ -14,7 +13,6 @@ interface ToggleChecklistItemProps {
 
 export function ToggleChecklistItem({
   label,
-  questionLabel,
   status,
   comment,
   onStatusChange,
@@ -62,16 +60,9 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors flex items-center justify-between gap-2 ${getButtonStyles()}`}
+        className={`w-full py-3 px-2 rounded text-xs font-medium transition-colors flex items-center justify-between gap-1 min-h-[48px] ${getButtonStyles()}`}
       >
-        <div className="flex items-center gap-2 text-left">
-          {questionLabel && (
-            <span className="font-bold text-primary text-xs px-1.5 py-0.5 bg-primary/10 rounded shrink-0">
-              {questionLabel}
-            </span>
-          )}
-          <span className="text-sm">{label}</span>
-        </div>
+        <span className="text-xs leading-tight text-left flex-1">{label}</span>
         {getIcon()}
       </button>
       {showComment && (
