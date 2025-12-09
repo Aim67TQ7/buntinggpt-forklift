@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings, Send, AlertCircle, CheckCircle2, Loader2, History, HelpCircle } from "lucide-react";
+import { Settings, Send, AlertCircle, CheckCircle2, Loader2, History } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleChecklistItem } from "./ToggleChecklistItem";
 import { ChecklistHelpDialog } from "./ChecklistHelpDialog";
-import { useForklifts, useActiveQuestions, useValidateBadge, useSubmitChecklist } from "@/hooks/useForkliftData";
+import { useForklifts, useForkliftQuestions, useValidateBadge, useSubmitChecklist } from "@/hooks/useForkliftData";
 import logo from "@/assets/logo.png";
 
 type Status = "yes" | "no" | null;
@@ -20,14 +20,14 @@ interface ResponseItem {
 export function CompactChecklist() {
   const navigate = useNavigate();
   const { data: forklifts, isLoading: forkliftsLoading } = useForklifts();
-  const { data: questions, isLoading: questionsLoading } = useActiveQuestions();
+  const [selectedForklift, setSelectedForklift] = useState<string>("");
+  const { data: questions, isLoading: questionsLoading } = useForkliftQuestions(selectedForklift);
   const validateBadge = useValidateBadge();
   const submitChecklist = useSubmitChecklist();
 
   const [badgeNumber, setBadgeNumber] = useState("");
   const [badgeValid, setBadgeValid] = useState<boolean | null>(null);
   const [employeeName, setEmployeeName] = useState<string | null>(null);
-  const [selectedForklift, setSelectedForklift] = useState<string>("");
   const [responses, setResponses] = useState<Record<string, ResponseItem>>({});
 
   // Set default forklift on load
@@ -37,6 +37,11 @@ export function CompactChecklist() {
       setSelectedForklift(defaultForklift.id);
     }
   }, [forklifts, selectedForklift]);
+
+  // Reset responses when forklift changes
+  useEffect(() => {
+    setResponses({});
+  }, [selectedForklift]);
 
   // Validate badge on change
   useEffect(() => {
@@ -196,18 +201,24 @@ export function CompactChecklist() {
         </div>
 
         {/* Checklist Items - 2 column grid */}
-        <div className="grid grid-cols-2 gap-2 pt-1">
-          {questions?.map((q) => (
-            <ToggleChecklistItem
-              key={q.id}
-              label={q.question_text}
-              status={responses[q.id]?.status || null}
-              comment={responses[q.id]?.comment || ""}
-              onStatusChange={(status) => handleStatusChange(q.id, status)}
-              onCommentChange={(comment) => handleCommentChange(q.id, comment)}
-            />
-          ))}
-        </div>
+        {questions && questions.length > 0 ? (
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            {questions.map((q) => (
+              <ToggleChecklistItem
+                key={q.id}
+                label={q.question_text}
+                status={responses[q.id]?.status || null}
+                comment={responses[q.id]?.comment || ""}
+                onStatusChange={(status) => handleStatusChange(q.id, status)}
+                onCommentChange={(comment) => handleCommentChange(q.id, comment)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            No questions assigned to this forklift. Contact admin.
+          </div>
+        )}
 
         {!allCommentsProvided && (
           <p className="text-xs text-destructive">Please provide comments for all failed items</p>

@@ -1507,6 +1507,42 @@ export type Database = {
         }
         Relationships: []
       }
+      forklift_question_assignments: {
+        Row: {
+          created_at: string | null
+          forklift_id: string
+          id: string
+          question_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          forklift_id: string
+          id?: string
+          question_id: string
+        }
+        Update: {
+          created_at?: string | null
+          forklift_id?: string
+          id?: string
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forklift_question_assignments_forklift_id_fkey"
+            columns: ["forklift_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forklift_question_assignments_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forklift_units: {
         Row: {
           created_at: string | null

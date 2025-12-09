@@ -100,6 +100,67 @@ export function useActiveQuestions() {
   });
 }
 
+// Get questions assigned to a specific forklift
+export function useForkliftQuestions(forkliftId: string | null) {
+  return useQuery({
+    queryKey: ["forklift-questions", forkliftId],
+    queryFn: async () => {
+      if (!forkliftId) return [];
+      const { data, error } = await supabase
+        .from("forklift_question_assignments")
+        .select("question_id, forklift_checklist_questions(*)")
+        .eq("forklift_id", forkliftId);
+      if (error) throw error;
+      return data.map(d => d.forklift_checklist_questions as ChecklistQuestion).filter(Boolean);
+    },
+    enabled: !!forkliftId,
+  });
+}
+
+// Get all question assignments for a forklift
+export function useQuestionAssignments(forkliftId: string | null) {
+  return useQuery({
+    queryKey: ["question-assignments", forkliftId],
+    queryFn: async () => {
+      if (!forkliftId) return [];
+      const { data, error } = await supabase
+        .from("forklift_question_assignments")
+        .select("question_id")
+        .eq("forklift_id", forkliftId);
+      if (error) throw error;
+      return data.map(d => d.question_id);
+    },
+    enabled: !!forkliftId,
+  });
+}
+
+// Assign/unassign a question to a forklift
+export function useToggleQuestionAssignment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ forkliftId, questionId, assigned }: { forkliftId: string; questionId: string; assigned: boolean }) => {
+      if (assigned) {
+        const { error } = await supabase
+          .from("forklift_question_assignments")
+          .insert({ forklift_id: forkliftId, question_id: questionId });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("forklift_question_assignments")
+          .delete()
+          .eq("forklift_id", forkliftId)
+          .eq("question_id", questionId);
+        if (error) throw error;
+      }
+    },
+    onSuccess: (_, { forkliftId }) => {
+      queryClient.invalidateQueries({ queryKey: ["question-assignments", forkliftId] });
+      queryClient.invalidateQueries({ queryKey: ["forklift-questions", forkliftId] });
+    },
+  });
+}
+
 export function useSubmissions() {
   return useQuery({
     queryKey: ["submissions"],

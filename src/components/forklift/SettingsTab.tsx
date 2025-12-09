@@ -1,11 +1,22 @@
 import { useState } from "react";
-import { Plus, Star, Trash2 } from "lucide-react";
+import { Plus, Star, Trash2, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAddForklift, useSetDefaultForklift, useDeleteForklift, ForkliftUnit } from "@/hooks/useForkliftData";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  useAddForklift, 
+  useSetDefaultForklift, 
+  useDeleteForklift, 
+  useChecklistQuestions,
+  useQuestionAssignments,
+  useToggleQuestionAssignment,
+  ForkliftUnit 
+} from "@/hooks/useForkliftData";
 
 interface SettingsTabProps {
   forklifts: ForkliftUnit[];
@@ -14,9 +25,14 @@ interface SettingsTabProps {
 export function SettingsTab({ forklifts }: SettingsTabProps) {
   const [newName, setNewName] = useState("");
   const [newUnitNumber, setNewUnitNumber] = useState("");
+  const [selectedForkliftForQuestions, setSelectedForkliftForQuestions] = useState<string | null>(null);
+  
   const addForklift = useAddForklift();
   const setDefault = useSetDefaultForklift();
   const deleteForklift = useDeleteForklift();
+  const { data: allQuestions } = useChecklistQuestions();
+  const { data: assignedQuestionIds } = useQuestionAssignments(selectedForkliftForQuestions);
+  const toggleAssignment = useToggleQuestionAssignment();
 
   const handleAdd = async () => {
     if (!newName.trim() || !newUnitNumber.trim()) {
@@ -36,6 +52,17 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
       }
     }
   };
+
+  const handleToggleQuestion = (questionId: string, currentlyAssigned: boolean) => {
+    if (!selectedForkliftForQuestions) return;
+    toggleAssignment.mutate({
+      forkliftId: selectedForkliftForQuestions,
+      questionId,
+      assigned: !currentlyAssigned,
+    });
+  };
+
+  const selectedForklift = forklifts.find(f => f.id === selectedForkliftForQuestions);
 
   return (
     <div className="space-y-4">
@@ -82,6 +109,14 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
                 <p className="text-sm text-muted-foreground">{f.unit_number}</p>
               </div>
               <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedForkliftForQuestions(f.id)}
+                  title="Assign Questions"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                </Button>
                 {!f.is_default && (
                   <Button
                     variant="ghost"
@@ -110,6 +145,42 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
           </Card>
         ))}
       </div>
+
+      {/* Question Assignment Dialog */}
+      <Dialog open={!!selectedForkliftForQuestions} onOpenChange={() => setSelectedForkliftForQuestions(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Assign Questions to {selectedForklift?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh]">
+            <div className="space-y-2 pr-2">
+              {allQuestions?.filter(q => q.is_active).map((q) => {
+                const isAssigned = assignedQuestionIds?.includes(q.id) ?? false;
+                return (
+                  <div
+                    key={q.id}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer"
+                    onClick={() => handleToggleQuestion(q.id, isAssigned)}
+                  >
+                    <Checkbox
+                      checked={isAssigned}
+                      onCheckedChange={() => handleToggleQuestion(q.id, isAssigned)}
+                    />
+                    <span className="text-sm flex-1">{q.question_text}</span>
+                  </div>
+                );
+              })}
+              {(!allQuestions || allQuestions.filter(q => q.is_active).length === 0) && (
+                <p className="text-center text-muted-foreground py-4">
+                  No active questions available. Enable questions in the Questions tab.
+                </p>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
