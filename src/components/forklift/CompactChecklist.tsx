@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Settings, Send, AlertCircle, CheckCircle2, Loader2, History } from "lucide-react";
+import { Settings, Send, AlertCircle, CheckCircle2, Loader2, History, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleChecklistItem } from "./ToggleChecklistItem";
+import { ChecklistHelpDialog } from "./ChecklistHelpDialog";
 import { useForklifts, useActiveQuestions, useValidateBadge, useSubmitChecklist } from "@/hooks/useForkliftData";
 import logo from "@/assets/logo.png";
 
@@ -137,12 +138,15 @@ export function CompactChecklist() {
           <img src={logo} alt="Logo" className="w-6 h-6 object-contain" />
           <span className="font-bold text-sm text-primary uppercase tracking-wide">Forklift Check</span>
         </div>
-        <button
-          onClick={() => navigate("/admin")}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <Settings className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <ChecklistHelpDialog />
+          <button
+            onClick={() => navigate("/admin")}
+            className="text-muted-foreground hover:text-foreground p-2"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="px-4 py-4 space-y-4">
