@@ -47,10 +47,10 @@ export function ToggleChecklistItem({
 
   const getIcon = () => {
     if (status === "yes") {
-      return <Check className="w-4 h-4 shrink-0" />;
+      return <Check className="w-3 h-3 shrink-0" />;
     }
     if (status === "no") {
-      return <X className="w-4 h-4 shrink-0" />;
+      return <X className="w-3 h-3 shrink-0" />;
     }
     return null;
   };
@@ -60,17 +60,17 @@ export function ToggleChecklistItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`w-full py-3 px-2 rounded text-xs font-medium transition-colors flex items-center justify-between gap-1 min-h-[48px] ${getButtonStyles()}`}
+        className={`w-full py-2 px-1.5 rounded text-[10px] font-medium transition-colors flex items-center justify-between gap-0.5 min-h-[40px] ${getButtonStyles()}`}
       >
-        <span className="text-xs leading-tight text-left flex-1">{label}</span>
+        <span className="text-[10px] leading-tight text-left flex-1">{label}</span>
         {getIcon()}
       </button>
       {showComment && (
         <textarea
-          placeholder="Required: Describe the issue..."
+          placeholder="Describe issue..."
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
-          className="w-full bg-muted border-0 rounded p-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+          className="w-full bg-muted border-0 rounded p-1.5 text-xs text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring"
           rows={2}
         />
       )}
