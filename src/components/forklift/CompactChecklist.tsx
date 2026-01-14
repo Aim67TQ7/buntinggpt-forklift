@@ -147,7 +147,7 @@ export function CompactChecklist() {
           <ChecklistHelpDialog />
           <button
             onClick={() => navigate("/admin")}
-            className="text-muted-foreground hover:text-foreground p-1.5"
+            className="hidden md:block text-muted-foreground hover:text-foreground p-1.5"
           >
             <Settings className="w-4 h-4" />
           </button>
