@@ -30,14 +30,14 @@ export function ChecklistHelpDialog() {
             <section>
               <h3 className="font-semibold text-lg text-primary mb-2">1. Enter Your Badge Number</h3>
               <p className="text-muted-foreground">
-                Type your employee badge number in the field. A green checkmark means you're authorized to operate forklifts. A red alert means you're not authorized.
+                Type your employee badge number in the field. A green checkmark means you're authorized to operate this equipment. A red alert means you're not authorized.
               </p>
             </section>
 
             <section>
-              <h3 className="font-semibold text-lg text-primary mb-2">2. Select Your Forklift</h3>
+              <h3 className="font-semibold text-lg text-primary mb-2">2. Select Your Equipment</h3>
               <p className="text-muted-foreground">
-                Choose the forklift you'll be operating from the dropdown. The default forklift is pre-selected.
+                Choose the equipment you'll be operating from the selection screen.
               </p>
             </section>
 

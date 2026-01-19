@@ -51,14 +51,14 @@ export function AdminHelpDialog() {
             <section>
               <h3 className="font-semibold text-lg text-primary mb-2">Drivers Tab</h3>
               <p className="text-muted-foreground">
-                Manage authorized forklift operators. Add new drivers with their name and badge number. Remove drivers to revoke their access.
+                Manage authorized equipment operators. Add new drivers with their name and badge number. Remove drivers to revoke their access.
               </p>
             </section>
 
             <section>
-              <h3 className="font-semibold text-lg text-primary mb-2">Forklifts Tab</h3>
+              <h3 className="font-semibold text-lg text-primary mb-2">Equipment Tab</h3>
               <p className="text-muted-foreground">
-                Add, remove, or set the default forklift. The default forklift is pre-selected when operators start a new checklist.
+                Add, remove, or set the default equipment. The default equipment is pre-selected when operators start a new checklist.
               </p>
             </section>
 
