@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQualifiedDrivers, useAddDriver, useDeleteDriver } from "@/hooks/useForkliftData";
 
 export function DriversTab() {
+  const [showAddDriver, setShowAddDriver] = useState(false);
   const [newBadge, setNewBadge] = useState("");
   const [newName, setNewName] = useState("");
   const [newCertifiedDate, setNewCertifiedDate] = useState("");
@@ -38,6 +39,7 @@ export function DriversTab() {
       setNewCertifiedDate("");
       setNewRecertifyDate("");
       setNewTrainer("");
+      setShowAddDriver(false);
     } catch (error: any) {
       if (error.code === "23505") {
         toast.error("Badge number already exists");
@@ -45,6 +47,15 @@ export function DriversTab() {
         toast.error("Failed to add driver");
       }
     }
+  };
+
+  const handleCancel = () => {
+    setShowAddDriver(false);
+    setNewBadge("");
+    setNewName("");
+    setNewCertifiedDate("");
+    setNewRecertifyDate("");
+    setNewTrainer("");
   };
 
   const isRecertifyDueSoon = (recertifyDate: string | null) => {
@@ -62,64 +73,82 @@ export function DriversTab() {
 
   return (
     <div className="space-y-4">
-      {/* Add Driver Form */}
-      <Card className="p-4 space-y-3">
-        <h3 className="font-semibold text-lg">Add Qualified Driver</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-base">Badge #</Label>
-            <Input
-              placeholder="1234"
-              value={newBadge}
-              onChange={(e) => setNewBadge(e.target.value)}
-              className="text-lg h-12"
-              maxLength={10}
-            />
+      {/* Add Driver Button/Form */}
+      {showAddDriver ? (
+        <Card className="p-5 border-primary border-2">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Badge #</Label>
+                <Input
+                  placeholder="1234"
+                  value={newBadge}
+                  onChange={(e) => setNewBadge(e.target.value)}
+                  className="text-lg h-14"
+                  maxLength={10}
+                  autoFocus
+                />
+              </div>
+              <div>
+                <Label className="text-base">Name</Label>
+                <Input
+                  placeholder="John Doe"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="text-lg h-14"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Certified Date</Label>
+                <Input
+                  type="date"
+                  value={newCertifiedDate}
+                  onChange={(e) => setNewCertifiedDate(e.target.value)}
+                  className="text-lg h-14"
+                />
+              </div>
+              <div>
+                <Label className="text-base">Recertify Date</Label>
+                <Input
+                  type="date"
+                  value={newRecertifyDate}
+                  onChange={(e) => setNewRecertifyDate(e.target.value)}
+                  className="text-lg h-14"
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-base">Trainer</Label>
+              <Input
+                placeholder="Trainer name"
+                value={newTrainer}
+                onChange={(e) => setNewTrainer(e.target.value)}
+                className="text-lg h-14"
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button className="h-12" onClick={handleAdd} disabled={addDriver.isPending}>
+                <Plus className="w-5 h-5 mr-2" />
+                Add Driver
+              </Button>
+              <Button variant="outline" onClick={handleCancel} className="h-12">
+                Cancel
+              </Button>
+            </div>
           </div>
-          <div>
-            <Label className="text-base">Name</Label>
-            <Input
-              placeholder="John Doe"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="text-lg h-12"
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-base">Certified Date</Label>
-            <Input
-              type="date"
-              value={newCertifiedDate}
-              onChange={(e) => setNewCertifiedDate(e.target.value)}
-              className="text-lg h-12"
-            />
-          </div>
-          <div>
-            <Label className="text-base">Recertify Date</Label>
-            <Input
-              type="date"
-              value={newRecertifyDate}
-              onChange={(e) => setNewRecertifyDate(e.target.value)}
-              className="text-lg h-12"
-            />
-          </div>
-        </div>
-        <div>
-          <Label className="text-base">Trainer</Label>
-          <Input
-            placeholder="Trainer name"
-            value={newTrainer}
-            onChange={(e) => setNewTrainer(e.target.value)}
-            className="text-lg h-12"
-          />
-        </div>
-        <Button className="w-full h-12 text-lg" onClick={handleAdd} disabled={addDriver.isPending}>
+        </Card>
+      ) : (
+        <Button
+          variant="outline"
+          className="w-full h-14 text-lg border-dashed"
+          onClick={() => setShowAddDriver(true)}
+        >
           <Plus className="w-5 h-5 mr-2" />
-          Add Driver
+          Add New Driver
         </Button>
-      </Card>
+      )}
 
       {/* Driver List */}
       <div className="space-y-2">
