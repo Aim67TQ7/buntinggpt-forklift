@@ -493,6 +493,43 @@ export function useAddDriver() {
   });
 }
 
+export function useUpdateDriver() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      id,
+      badgeNumber, 
+      driverName, 
+      certifiedDate, 
+      recertifyDate, 
+      trainer 
+    }: { 
+      id: string;
+      badgeNumber: string; 
+      driverName: string;
+      certifiedDate?: string;
+      recertifyDate?: string;
+      trainer?: string;
+    }) => {
+      const { error } = await supabase
+        .from("forklift_qualified_drivers")
+        .update({ 
+          badge_number: badgeNumber, 
+          driver_name: driverName,
+          certified_date: certifiedDate || null,
+          recertify_date: recertifyDate || null,
+          trainer: trainer || null
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qualified-drivers"] });
+    },
+  });
+}
+
 export function useDeleteDriver() {
   const queryClient = useQueryClient();
   
