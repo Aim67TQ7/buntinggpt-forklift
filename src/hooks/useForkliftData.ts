@@ -54,6 +54,9 @@ export interface QualifiedDriver {
   driver_name: string;
   is_active: boolean;
   created_at: string;
+  certified_date: string | null;
+  recertify_date: string | null;
+  trainer: string | null;
 }
 
 export function useForklifts() {
@@ -460,10 +463,28 @@ export function useAddDriver() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ badgeNumber, driverName }: { badgeNumber: string; driverName: string }) => {
+    mutationFn: async ({ 
+      badgeNumber, 
+      driverName, 
+      certifiedDate, 
+      recertifyDate, 
+      trainer 
+    }: { 
+      badgeNumber: string; 
+      driverName: string;
+      certifiedDate?: string;
+      recertifyDate?: string;
+      trainer?: string;
+    }) => {
       const { error } = await supabase
         .from("forklift_qualified_drivers")
-        .insert({ badge_number: badgeNumber, driver_name: driverName });
+        .insert({ 
+          badge_number: badgeNumber, 
+          driver_name: driverName,
+          certified_date: certifiedDate || null,
+          recertify_date: recertifyDate || null,
+          trainer: trainer || null
+        });
       if (error) throw error;
     },
     onSuccess: () => {
