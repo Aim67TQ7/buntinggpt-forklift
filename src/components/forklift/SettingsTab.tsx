@@ -23,6 +23,7 @@ interface SettingsTabProps {
 }
 
 export function SettingsTab({ forklifts }: SettingsTabProps) {
+  const [showAddForklift, setShowAddForklift] = useState(false);
   const [newName, setNewName] = useState("");
   const [newUnitNumber, setNewUnitNumber] = useState("");
   const [selectedForkliftForQuestions, setSelectedForkliftForQuestions] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
       toast.success("Forklift added");
       setNewName("");
       setNewUnitNumber("");
+      setShowAddForklift(false);
     } catch (error: any) {
       if (error.code === "23505") {
         toast.error("Unit number already exists");
@@ -51,6 +53,12 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
         toast.error("Failed to add forklift");
       }
     }
+  };
+
+  const handleCancel = () => {
+    setShowAddForklift(false);
+    setNewName("");
+    setNewUnitNumber("");
   };
 
   const handleToggleQuestion = (questionId: string, currentlyAssigned: boolean) => {
@@ -66,91 +74,116 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
 
   return (
     <div className="space-y-4">
-      {/* Add Forklift Form */}
-      <Card className="p-4 space-y-3">
-        <h3 className="font-semibold">Add Forklift</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Label className="text-xs">Name</Label>
-            <Input
-              placeholder="Forklift 2"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-            />
+      {/* Add Forklift Button/Form */}
+      {showAddForklift ? (
+        <Card className="p-5 border-primary border-2">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Name</Label>
+                <Input
+                  placeholder="Forklift 2"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="text-lg h-14"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <Label className="text-base">Unit #</Label>
+                <Input
+                  placeholder="FL-002"
+                  value={newUnitNumber}
+                  onChange={(e) => setNewUnitNumber(e.target.value)}
+                  className="text-lg h-14"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button className="h-12" onClick={handleAdd} disabled={addForklift.isPending}>
+                <Plus className="w-5 h-5 mr-2" />
+                Add Forklift
+              </Button>
+              <Button variant="outline" onClick={handleCancel} className="h-12">
+                Cancel
+              </Button>
+            </div>
           </div>
-          <div>
-            <Label className="text-xs">Unit #</Label>
-            <Input
-              placeholder="FL-002"
-              value={newUnitNumber}
-              onChange={(e) => setNewUnitNumber(e.target.value)}
-            />
-          </div>
-        </div>
-        <Button className="w-full" onClick={handleAdd} disabled={addForklift.isPending}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Forklift
+        </Card>
+      ) : (
+        <Button
+          variant="outline"
+          className="w-full h-14 text-lg border-dashed"
+          onClick={() => setShowAddForklift(true)}
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Add New Forklift
         </Button>
-      </Card>
+      )}
 
       {/* Forklift List */}
       <div className="space-y-2">
-        <h3 className="font-semibold">Manage Forklifts</h3>
+        <h3 className="font-semibold text-lg">Manage Forklifts ({forklifts.length})</h3>
         {forklifts.map((f) => (
-          <Card key={f.id} className="p-3">
+          <Card key={f.id} className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{f.name}</span>
+                  <span className="font-medium text-lg">{f.name}</span>
                   {f.is_default && (
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">{f.unit_number}</p>
+                <p className="text-base text-muted-foreground">{f.unit_number}</p>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
+                  className="h-12 w-12"
                   onClick={() => setSelectedForkliftForQuestions(f.id)}
                   title="Assign Questions"
                 >
-                  <ClipboardList className="w-4 h-4" />
+                  <ClipboardList className="w-5 h-5" />
                 </Button>
                 {!f.is_default && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
+                    className="h-12 w-12"
                     onClick={() => {
                       setDefault.mutate(f.id);
                       toast.success("Default forklift updated");
                     }}
                   >
-                    <Star className="w-4 h-4" />
+                    <Star className="w-5 h-5" />
                   </Button>
                 )}
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-destructive"
+                  size="icon"
+                  className="text-destructive h-12 w-12"
                   onClick={() => {
                     deleteForklift.mutate(f.id);
                     toast.success("Forklift removed");
                   }}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                 </Button>
               </div>
             </div>
           </Card>
         ))}
+        {forklifts.length === 0 && (
+          <p className="text-center text-muted-foreground py-8 text-lg">No forklifts added yet</p>
+        )}
       </div>
 
       {/* Question Assignment Dialog */}
       <Dialog open={!!selectedForkliftForQuestions} onOpenChange={() => setSelectedForkliftForQuestions(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-xl">
               Assign Questions to {selectedForklift?.name}
             </DialogTitle>
           </DialogHeader>
@@ -161,19 +194,19 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
                 return (
                   <div
                     key={q.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer"
+                    className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer"
                     onClick={() => handleToggleQuestion(q.id, isAssigned)}
                   >
                     <Checkbox
                       checked={isAssigned}
                       onCheckedChange={() => handleToggleQuestion(q.id, isAssigned)}
                     />
-                    <span className="text-sm flex-1">{q.question_text}</span>
+                    <span className="text-base flex-1">{q.question_text}</span>
                   </div>
                 );
               })}
               {(!allQuestions || allQuestions.filter(q => q.is_active).length === 0) && (
-                <p className="text-center text-muted-foreground py-4">
+                <p className="text-center text-muted-foreground py-4 text-base">
                   No active questions available. Enable questions in the Questions tab.
                 </p>
               )}

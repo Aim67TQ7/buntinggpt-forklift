@@ -124,25 +124,28 @@ export function AdminPage() {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "←"].map((digit, i) => (
-                <Button
-                  key={i}
-                  variant="outline"
-                  className="h-12 text-lg font-medium"
-                  disabled={digit === ""}
-                  onClick={() => {
-                    if (digit === "←") {
-                      setPasscode((p) => p.slice(0, -1));
-                    } else if (digit !== "") {
-                      handlePasscode(String(digit));
-                    }
-                  }}
-                >
-                  {digit}
-                </Button>
-              ))}
-            </div>
+            <Input
+              type="password"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={4}
+              value={passcode}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                setPasscode(value);
+                if (value.length === 4) {
+                  if (value === ADMIN_PASSCODE) {
+                    setAuthenticated(true);
+                  } else {
+                    toast.error("Invalid passcode");
+                    setPasscode("");
+                  }
+                }
+              }}
+              className="text-center text-2xl tracking-widest h-14"
+              placeholder="••••"
+              autoFocus
+            />
             <Button
               variant="ghost"
               className="w-full mt-3 text-base h-10"
