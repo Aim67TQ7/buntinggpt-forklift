@@ -563,3 +563,142 @@ export function useUpdateAdminNotes() {
     },
   });
 }
+
+// ========== MAINTENANCE HOOKS ==========
+
+export interface MaintenanceRecord {
+  id: string;
+  equipment_id: string;
+  submission_id: string | null;
+  response_id: string | null;
+  status: "open" | "in_progress" | "completed" | "deferred";
+  priority: "low" | "medium" | "high" | "critical";
+  issue_description: string;
+  work_performed: string | null;
+  parts_used: string | null;
+  technician_name: string | null;
+  reported_by: string | null;
+  reported_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  estimated_cost: number | null;
+  actual_cost: number | null;
+  downtime_hours: number | null;
+  is_from_checklist: boolean;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  forklift_units?: ForkliftUnit;
+}
+
+export function useMaintenanceRecords() {
+  return useQuery({
+    queryKey: ["maintenance-records"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("equipment_maintenance")
+        .select("*, forklift_units(*)")
+        .order("reported_at", { ascending: false });
+      if (error) throw error;
+      return data as MaintenanceRecord[];
+    },
+  });
+}
+
+export function useAddMaintenance() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (record: {
+      equipmentId: string;
+      issueDescription: string;
+      priority?: "low" | "medium" | "high" | "critical";
+      reportedBy?: string;
+      estimatedCost?: number;
+      notes?: string;
+      submissionId?: string;
+      responseId?: string;
+      isFromChecklist?: boolean;
+    }) => {
+      const { error } = await supabase
+        .from("equipment_maintenance")
+        .insert({
+          equipment_id: record.equipmentId,
+          issue_description: record.issueDescription,
+          priority: record.priority || "medium",
+          reported_by: record.reportedBy || null,
+          estimated_cost: record.estimatedCost || null,
+          notes: record.notes || null,
+          submission_id: record.submissionId || null,
+          response_id: record.responseId || null,
+          is_from_checklist: record.isFromChecklist || false,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+    },
+  });
+}
+
+export function useUpdateMaintenance() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (record: {
+      id: string;
+      status?: "open" | "in_progress" | "completed" | "deferred";
+      priority?: "low" | "medium" | "high" | "critical";
+      issueDescription?: string;
+      workPerformed?: string;
+      partsUsed?: string;
+      technicianName?: string;
+      startedAt?: string;
+      completedAt?: string;
+      estimatedCost?: number;
+      actualCost?: number;
+      downtimeHours?: number;
+      notes?: string;
+    }) => {
+      const updateData: Record<string, unknown> = {};
+      if (record.status !== undefined) updateData.status = record.status;
+      if (record.priority !== undefined) updateData.priority = record.priority;
+      if (record.issueDescription !== undefined) updateData.issue_description = record.issueDescription;
+      if (record.workPerformed !== undefined) updateData.work_performed = record.workPerformed;
+      if (record.partsUsed !== undefined) updateData.parts_used = record.partsUsed;
+      if (record.technicianName !== undefined) updateData.technician_name = record.technicianName;
+      if (record.startedAt !== undefined) updateData.started_at = record.startedAt;
+      if (record.completedAt !== undefined) updateData.completed_at = record.completedAt;
+      if (record.estimatedCost !== undefined) updateData.estimated_cost = record.estimatedCost;
+      if (record.actualCost !== undefined) updateData.actual_cost = record.actualCost;
+      if (record.downtimeHours !== undefined) updateData.downtime_hours = record.downtimeHours;
+      if (record.notes !== undefined) updateData.notes = record.notes;
+      
+      const { error } = await supabase
+        .from("equipment_maintenance")
+        .update(updateData)
+        .eq("id", record.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+    },
+  });
+}
+
+export function useDeleteMaintenance() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("equipment_maintenance")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+    },
+  });
+}
