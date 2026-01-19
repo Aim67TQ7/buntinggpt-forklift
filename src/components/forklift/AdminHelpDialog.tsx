@@ -42,6 +42,13 @@ export function AdminHelpDialog() {
             </section>
 
             <section>
+              <h3 className="font-semibold text-lg text-primary mb-2">Maintenance Tab</h3>
+              <p className="text-muted-foreground">
+                Track equipment maintenance and repairs. Create records manually or view those auto-generated from failed checklist items. Update status, track costs, and record work performed.
+              </p>
+            </section>
+
+            <section>
               <h3 className="font-semibold text-lg text-primary mb-2">Questions Tab</h3>
               <p className="text-muted-foreground">
                 Manage checklist questions. Toggle the switch to enable or disable questions. Disabled questions won't appear on the checklist.

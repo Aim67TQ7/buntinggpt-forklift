@@ -1683,6 +1683,100 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment_maintenance: {
+        Row: {
+          actual_cost: number | null
+          completed_at: string | null
+          created_at: string
+          downtime_hours: number | null
+          equipment_id: string
+          estimated_cost: number | null
+          id: string
+          is_from_checklist: boolean
+          issue_description: string
+          notes: string | null
+          parts_used: string | null
+          priority: string
+          reported_at: string
+          reported_by: string | null
+          response_id: string | null
+          started_at: string | null
+          status: string
+          submission_id: string | null
+          technician_name: string | null
+          updated_at: string
+          work_performed: string | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          completed_at?: string | null
+          created_at?: string
+          downtime_hours?: number | null
+          equipment_id: string
+          estimated_cost?: number | null
+          id?: string
+          is_from_checklist?: boolean
+          issue_description: string
+          notes?: string | null
+          parts_used?: string | null
+          priority?: string
+          reported_at?: string
+          reported_by?: string | null
+          response_id?: string | null
+          started_at?: string | null
+          status?: string
+          submission_id?: string | null
+          technician_name?: string | null
+          updated_at?: string
+          work_performed?: string | null
+        }
+        Update: {
+          actual_cost?: number | null
+          completed_at?: string | null
+          created_at?: string
+          downtime_hours?: number | null
+          equipment_id?: string
+          estimated_cost?: number | null
+          id?: string
+          is_from_checklist?: boolean
+          issue_description?: string
+          notes?: string | null
+          parts_used?: string | null
+          priority?: string
+          reported_at?: string
+          reported_by?: string | null
+          response_id?: string | null
+          started_at?: string | null
+          status?: string
+          submission_id?: string | null
+          technician_name?: string | null
+          updated_at?: string
+          work_performed?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_maintenance_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_maintenance_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_maintenance_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "forklift_checklist_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escalations: {
         Row: {
           assigned_to: string | null

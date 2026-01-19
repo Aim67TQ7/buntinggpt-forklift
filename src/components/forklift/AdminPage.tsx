@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save, Edit2, Plus } from "lucide-react";
+import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save, Edit2, Plus, Wrench } from "lucide-react";
 import { AdminHelpDialog } from "./AdminHelpDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ import {
 } from "@/hooks/useForkliftData";
 import { SettingsTab } from "./SettingsTab";
 import { DriversTab } from "./DriversTab";
+import { MaintenanceTab } from "./MaintenanceTab";
 
 const ADMIN_PASSCODE = "4155";
 
@@ -214,22 +215,26 @@ export function AdminPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="submissions" className="p-5">
-        <TabsList className="w-full grid grid-cols-4 h-14">
-          <TabsTrigger value="submissions" className="text-base">
-            <ClipboardList className="w-5 h-5 mr-2" />
+        <TabsList className="w-full grid grid-cols-5 h-14">
+          <TabsTrigger value="submissions" className="text-sm px-2">
+            <ClipboardList className="w-4 h-4 mr-1" />
             History
           </TabsTrigger>
-          <TabsTrigger value="questions" className="text-base">
-            <Check className="w-5 h-5 mr-2" />
+          <TabsTrigger value="maintenance" className="text-sm px-2">
+            <Wrench className="w-4 h-4 mr-1" />
+            Maint.
+          </TabsTrigger>
+          <TabsTrigger value="questions" className="text-sm px-2">
+            <Check className="w-4 h-4 mr-1" />
             Questions
           </TabsTrigger>
-          <TabsTrigger value="drivers" className="text-base">
-            <Users className="w-5 h-5 mr-2" />
+          <TabsTrigger value="drivers" className="text-sm px-2">
+            <Users className="w-4 h-4 mr-1" />
             Drivers
           </TabsTrigger>
-          <TabsTrigger value="settings" className="text-base">
-            <Truck className="w-5 h-5 mr-2" />
-            Equipment
+          <TabsTrigger value="settings" className="text-sm px-2">
+            <Truck className="w-4 h-4 mr-1" />
+            Equip.
           </TabsTrigger>
         </TabsList>
 
@@ -383,6 +388,11 @@ export function AdminPage() {
               )}
             </Card>
           ))}
+        </TabsContent>
+
+        {/* Maintenance Tab */}
+        <TabsContent value="maintenance" className="mt-5">
+          <MaintenanceTab />
         </TabsContent>
 
         {/* Drivers Tab */}
