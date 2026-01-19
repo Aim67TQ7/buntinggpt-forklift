@@ -390,6 +390,38 @@ export function useUpdateQuestion() {
   });
 }
 
+export function useAddQuestion() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ questionText, label, category }: { questionText: string; label?: string; category?: string }) => {
+      // Get highest sort_order
+      const { data: existing } = await supabase
+        .from("forklift_checklist_questions")
+        .select("sort_order")
+        .order("sort_order", { ascending: false })
+        .limit(1);
+      
+      const nextOrder = (existing?.[0]?.sort_order || 0) + 1;
+      
+      const { error } = await supabase
+        .from("forklift_checklist_questions")
+        .insert({ 
+          question_text: questionText, 
+          label: label || `Q${nextOrder}`,
+          category: category || "General",
+          sort_order: nextOrder,
+          is_active: true
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklist-questions"] });
+      queryClient.invalidateQueries({ queryKey: ["active-questions"] });
+    },
+  });
+}
+
 export function useDeleteSubmission() {
   const queryClient = useQueryClient();
   

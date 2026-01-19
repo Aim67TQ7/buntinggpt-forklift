@@ -1474,9 +1474,10 @@ export type Database = {
           location: string | null
           name_first: string
           name_last: string
-          reports_to: string
+          reports_to: string | null
           updated_at: string
           user_email: string | null
+          user_email_ci: string | null
           user_id: string | null
           work_category: string | null
         }
@@ -1502,9 +1503,10 @@ export type Database = {
           location?: string | null
           name_first: string
           name_last: string
-          reports_to?: string
+          reports_to?: string | null
           updated_at?: string
           user_email?: string | null
+          user_email_ci?: string | null
           user_id?: string | null
           work_category?: string | null
         }
@@ -1530,9 +1532,10 @@ export type Database = {
           location?: string | null
           name_first?: string
           name_last?: string
-          reports_to?: string
+          reports_to?: string | null
           updated_at?: string
           user_email?: string | null
+          user_email_ci?: string | null
           user_id?: string | null
           work_category?: string | null
         }

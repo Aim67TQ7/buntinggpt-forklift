@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save, Edit2 } from "lucide-react";
+import { ArrowLeft, Bell, ClipboardList, Truck, Trash2, Eye, X, Check, Users, Save, Edit2, Plus } from "lucide-react";
 import { AdminHelpDialog } from "./AdminHelpDialog";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ import {
   useDeleteSubmission,
   useSubmissionResponses,
   useUpdateAdminNotes,
+  useAddQuestion,
 } from "@/hooks/useForkliftData";
 import { SettingsTab } from "./SettingsTab";
 import { DriversTab } from "./DriversTab";
@@ -39,6 +40,9 @@ export function AdminPage() {
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [editQuestionText, setEditQuestionText] = useState("");
   const [editQuestionLabel, setEditQuestionLabel] = useState("");
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [newQuestionText, setNewQuestionText] = useState("");
+  const [newQuestionLabel, setNewQuestionLabel] = useState("");
 
   const { data: notifications } = useFailNotifications();
   const { data: submissions } = useSubmissions();
@@ -50,6 +54,7 @@ export function AdminPage() {
   const updateQuestion = useUpdateQuestion();
   const deleteSubmission = useDeleteSubmission();
   const updateAdminNotes = useUpdateAdminNotes();
+  const addQuestion = useAddQuestion();
 
   const handlePasscode = (digit: string) => {
     const newPasscode = passcode + digit;
@@ -83,6 +88,19 @@ export function AdminPage() {
       });
       setEditingQuestion(null);
       toast.success("Question updated");
+    }
+  };
+
+  const handleAddQuestion = () => {
+    if (newQuestionText.trim()) {
+      addQuestion.mutate({
+        questionText: newQuestionText.trim(),
+        label: newQuestionLabel.trim() || undefined,
+      });
+      setNewQuestionText("");
+      setNewQuestionLabel("");
+      setShowAddQuestion(false);
+      toast.success("Question added");
     }
   };
 
@@ -259,16 +277,69 @@ export function AdminPage() {
 
         {/* Questions Tab */}
         <TabsContent value="questions" className="mt-5 space-y-4">
+          {/* Add Question Button/Form */}
+          {showAddQuestion ? (
+            <Card className="p-5 border-primary border-2">
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <Input
+                    value={newQuestionLabel}
+                    onChange={(e) => setNewQuestionLabel(e.target.value)}
+                    placeholder="Label (e.g., Q1)"
+                    className="w-24 h-14 text-lg"
+                  />
+                  <Input
+                    value={newQuestionText}
+                    onChange={(e) => setNewQuestionText(e.target.value)}
+                    placeholder="Enter question text..."
+                    className="flex-1 h-14 text-lg"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button onClick={handleAddQuestion} className="h-12" disabled={!newQuestionText.trim()}>
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add Question
+                  </Button>
+                  <Button variant="outline" onClick={() => {
+                    setShowAddQuestion(false);
+                    setNewQuestionText("");
+                    setNewQuestionLabel("");
+                  }} className="h-12">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full h-14 text-lg border-dashed"
+              onClick={() => setShowAddQuestion(true)}
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add New Question
+            </Button>
+          )}
+
           {questions?.map((q, index) => (
             <Card key={q.id} className="p-5">
               {editingQuestion === q.id ? (
                 <div className="space-y-4">
-                  <Input
-                    value={editQuestionText}
-                    onChange={(e) => setEditQuestionText(e.target.value)}
-                    placeholder="Question text"
-                    className="w-full h-14 text-lg"
-                  />
+                  <div className="flex gap-3">
+                    <Input
+                      value={editQuestionLabel}
+                      onChange={(e) => setEditQuestionLabel(e.target.value)}
+                      placeholder="Label"
+                      className="w-24 h-14 text-lg"
+                    />
+                    <Input
+                      value={editQuestionText}
+                      onChange={(e) => setEditQuestionText(e.target.value)}
+                      placeholder="Question text"
+                      className="flex-1 h-14 text-lg"
+                    />
+                  </div>
                   <div className="flex gap-3">
                     <Button onClick={handleSaveQuestion} className="h-12">
                       <Save className="w-5 h-5 mr-2" />
