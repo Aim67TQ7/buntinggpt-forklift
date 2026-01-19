@@ -229,7 +229,7 @@ export function AdminPage() {
           </TabsTrigger>
           <TabsTrigger value="settings" className="text-base">
             <Truck className="w-5 h-5 mr-2" />
-            Forklifts
+            Equipment
           </TabsTrigger>
         </TabsList>
 

@@ -42,15 +42,15 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
     }
     try {
       await addForklift.mutateAsync({ name: newName, unitNumber: newUnitNumber });
-      toast.success("Forklift added");
+      toast.success("Equipment added");
       setNewName("");
       setNewUnitNumber("");
       setShowAddForklift(false);
     } catch (error: any) {
       if (error.code === "23505") {
-        toast.error("Unit number already exists");
+        toast.error("Equipment unit number already exists");
       } else {
-        toast.error("Failed to add forklift");
+        toast.error("Failed to add equipment");
       }
     }
   };
@@ -82,7 +82,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
               <div>
                 <Label className="text-base">Name</Label>
                 <Input
-                  placeholder="Forklift 2"
+                  placeholder="Hoist 1"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="text-lg h-14"
@@ -102,7 +102,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
             <div className="flex gap-3">
               <Button className="h-12" onClick={handleAdd} disabled={addForklift.isPending}>
                 <Plus className="w-5 h-5 mr-2" />
-                Add Forklift
+                Add Equipment
               </Button>
               <Button variant="outline" onClick={handleCancel} className="h-12">
                 Cancel
@@ -117,13 +117,13 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
           onClick={() => setShowAddForklift(true)}
         >
           <Plus className="w-5 h-5 mr-2" />
-          Add New Forklift
+          Add New Equipment
         </Button>
       )}
 
-      {/* Forklift List */}
+      {/* Equipment List */}
       <div className="space-y-2">
-        <h3 className="font-semibold text-lg">Manage Forklifts ({forklifts.length})</h3>
+        <h3 className="font-semibold text-lg">Manage Equipment ({forklifts.length})</h3>
         {forklifts.map((f) => (
           <Card key={f.id} className="p-4">
             <div className="flex items-center justify-between">
@@ -153,7 +153,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
                     className="h-12 w-12"
                     onClick={() => {
                       setDefault.mutate(f.id);
-                      toast.success("Default forklift updated");
+                      toast.success("Default equipment updated");
                     }}
                   >
                     <Star className="w-5 h-5" />
@@ -165,7 +165,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
                   className="text-destructive h-12 w-12"
                   onClick={() => {
                     deleteForklift.mutate(f.id);
-                    toast.success("Forklift removed");
+                    toast.success("Equipment removed");
                   }}
                 >
                   <Trash2 className="w-5 h-5" />
@@ -175,7 +175,7 @@ export function SettingsTab({ forklifts }: SettingsTabProps) {
           </Card>
         ))}
         {forklifts.length === 0 && (
-          <p className="text-center text-muted-foreground py-8 text-lg">No forklifts added yet</p>
+          <p className="text-center text-muted-foreground py-8 text-lg">No equipment added yet</p>
         )}
       </div>
 
