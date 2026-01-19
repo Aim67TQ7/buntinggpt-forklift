@@ -1877,24 +1877,33 @@ export type Database = {
       forklift_qualified_drivers: {
         Row: {
           badge_number: string
+          certified_date: string | null
           created_at: string | null
           driver_name: string
           id: string
           is_active: boolean | null
+          recertify_date: string | null
+          trainer: string | null
         }
         Insert: {
           badge_number: string
+          certified_date?: string | null
           created_at?: string | null
           driver_name: string
           id?: string
           is_active?: boolean | null
+          recertify_date?: string | null
+          trainer?: string | null
         }
         Update: {
           badge_number?: string
+          certified_date?: string | null
           created_at?: string | null
           driver_name?: string
           id?: string
           is_active?: boolean | null
+          recertify_date?: string | null
+          trainer?: string | null
         }
         Relationships: []
       }
