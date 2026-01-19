@@ -157,10 +157,11 @@ export function CompactChecklist() {
               <Button
                 key={f.id}
                 variant="outline"
-                className="h-16 text-sm font-medium bg-muted border-border hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="h-16 flex flex-col items-center justify-center bg-muted border-border hover:bg-primary hover:text-primary-foreground transition-colors"
                 onClick={() => setSelectedForklift(f.id)}
               >
-                {f.name}
+                <span className="font-bold text-base">{f.unit_number}</span>
+                <span className="text-xs truncate max-w-full opacity-70">{f.name}</span>
               </Button>
             ))}
           </div>
